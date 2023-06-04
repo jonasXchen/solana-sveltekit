@@ -1,0 +1,12 @@
+/* app.css */ 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	@font-face {
+		font-family: 'Nunito';
+		src:  url('./lib/assets/fonts/Nunito-VariableFont_wght.ttf');
+	}
+}
