@@ -21,7 +21,7 @@
 		<div class="absolute left-6 top-8 items-center">
 			<a href="/">
 			<div class:active={$page.url.pathname === '/'}>
-					<img src={($theme == 'dark')? MetacampDarkModeLogo : MetacampLightModeLogo} alt="Metacamp" class="h-6"/>
+					<img src={($theme == 'light')? MetacampLightModeLogo : MetacampDarkModeLogo} alt="Metacamp" class="h-6"/>
 			</div></a>
 		</div>
 		<div class="absolute right-16 top-6 h-4">
