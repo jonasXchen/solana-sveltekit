@@ -1,13 +1,12 @@
 import * as dotenv from 'dotenv'
-import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction, type Signer } from '@solana/web3.js';
-import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
-import { connectedCluster } from '$lib/stores';
+import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+
 import { createSplTransferIx } from '$lib/utils/createSplTransferIx'
 import { json } from '@sveltejs/kit';
 
 dotenv.config()
 const connection = new Connection(`${process.env.HTTPS_RPC_ENDPOINT}`, 'confirmed')
-const splToken = new PublicKey(process.env.USDC_MINT as String);
+const splToken = new PublicKey(process.env.USDC_DEV_MINT as String);
 const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as String);
 const LOCAL_KEYPAIR = Uint8Array.from(process.env.LOCAL_KEYPAIR! as unknown as number[])
 
@@ -15,7 +14,7 @@ const LOCAL_KEYPAIR = Uint8Array.from(process.env.LOCAL_KEYPAIR! as unknown as n
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export function GET( event : any ) {
 
-  const label = "Metacamp";
+  const label = "Metacamp"; 
   const icon = 'https://uploads-ssl.webflow.com/628b99344f25667e77da83cf/62c3a95fc598e35cf796a1f2_Asset%209%403x.png'
 
   return json(
