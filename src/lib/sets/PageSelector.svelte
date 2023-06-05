@@ -11,7 +11,7 @@
 <section class="text-black dark:text-white" >
     <div class="items-center space-y-2">
         <div>
-            <Button label='Solana Operations + Token2022' onClick={() => goto('/solana')}/>
+            <Button label='Solana Operations with Token2022' onClick={() => goto('/solana')}/>
         </div>
         <div>
             <Button label='SolanaPay QR' onClick={() => goto('/solanapay')}/>
