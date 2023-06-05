@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
 
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import * as dotenv from 'dotenv'
-dotenv.config()
+import { HTTPS_RPC_ENDPOINT } from '$env/static/private'
 
-const connection = new Connection(`${process.env.HTTPS_RPC_ENDPOINT}`, 'confirmed')
+const connection = new Connection(`${HTTPS_RPC_ENDPOINT}`, 'confirmed')
+console.log(connection)
 
 /** @type {import('./$types').RequestHandler} */
 export function GET(event) {
