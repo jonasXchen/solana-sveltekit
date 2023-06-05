@@ -1,9 +1,10 @@
-import * as dotenv from 'dotenv'
+
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 
 import { createSplTransferIx } from '$lib/utils/createSplTransferIx'
 import { json } from '@sveltejs/kit';
 
+import * as dotenv from 'dotenv'
 dotenv.config()
 const connection = new Connection(`${process.env.HTTPS_RPC_ENDPOINT}`, 'confirmed')
 const splToken = new PublicKey(process.env.USDC_DEV_MINT as String);

@@ -1,8 +1,6 @@
 <script lang=ts>
-    import { cluster, connectedCluster } from '$lib/stores'
-    import { encodeURL, createQR, parseURL, type Amount } from '@solana/pay'
-    import { PublicKey, Transaction, Keypair } from '@solana/web3.js';
-    import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
+    import { encodeURL, createQR, type Amount } from '@solana/pay'
+    import { PublicKey, Keypair } from '@solana/web3.js';
   
     import BigNumber from 'bignumber.js';
     import Button from '../components/Button.svelte'
