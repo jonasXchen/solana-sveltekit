@@ -1,6 +1,5 @@
 
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
-
 import { createSplTransferIx } from '$lib/utils/createSplTransferIx'
 import { json } from '@sveltejs/kit';
 import { PUBLIC_HTTPS_RPC_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_WALLET } from '$env/static/public'

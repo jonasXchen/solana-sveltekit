@@ -1,9 +1,9 @@
-import { Connection, clusterApiUrl } from '@solana/web3.js'
+import { Connection, clusterApiUrl, } from '@solana/web3.js'
 import { writable } from "svelte/store";
 
 
 // Export wallet cluster and cluster connection
-export let cluster : any
+export let cluster : any = 'devnet'
 export let connectedCluster = writable( new Connection(clusterApiUrl('devnet'), 'confirmed') )
 
 if (typeof localStorage !== 'undefined') {
@@ -39,7 +39,6 @@ theme.subscribe((value: string) => {
 
 
 // Notifications
-type Notification = string
 export const notifications = writable <string[]>([])
 let notificationCounter = 0
 export function notify (message: string) {
