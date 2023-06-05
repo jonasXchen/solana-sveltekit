@@ -3,11 +3,15 @@
     import { encodeURL, createQR, parseURL, type Amount } from '@solana/pay'
     import { PublicKey, Transaction } from '@solana/web3.js';
     import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
+  
     import BigNumber from 'bignumber.js';
     import Button from '../components/Button.svelte'
-   
+
+    import * as dotenv from 'dotenv'
+    dotenv.config()
+
     let QR
-    let url : URL
+    let url : URL = new URL(`solana:${process.env.SOLANAPAY_ENDPOINT}`)
     let recipient : string
     let amount : Amount
     let splToken : PublicKey
@@ -29,8 +33,6 @@
             // reference: new PublicKey(recipient)
         }
         )
-
-        url = new URL(`solana:https://solana.metacamp.so/endpoint/solanapay`)
 
         QR = createQR(url, 200)
         await QR._getElement()
