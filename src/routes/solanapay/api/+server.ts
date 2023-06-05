@@ -1,41 +1,44 @@
 import * as dotenv from 'dotenv'
-import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import BigNumber from 'bignumber.js';
+import { clusterApiUrl, Connection, Keypair, PublicKey, Transaction, type Signer } from '@solana/web3.js';
 import { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } from '@solana/spl-token';
 import { connectedCluster } from '$lib/stores';
-import { createSplTransferIx } from '$lib/ts/createSplTransferIx'
+import { createSplTransferIx } from '$lib/utils/createSplTransferIx'
+import { json } from '@sveltejs/kit';
 
 dotenv.config()
+const connection = new Connection(`${process.env.HTTPS_RPC_ENDPOINT}`, 'confirmed')
+const splToken = new PublicKey(process.env.USDC_MINT as String);
+const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as String);
+const LOCAL_KEYPAIR = Uint8Array.from(process.env.LOCAL_KEYPAIR! as unknown as number[])
+
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
-export async function GET() {
+export function GET( event : any ) {
 
   const label = "Metacamp";
   const icon = 'https://uploads-ssl.webflow.com/628b99344f25667e77da83cf/62c3a95fc598e35cf796a1f2_Asset%209%403x.png'
 
-  return {
-    status: 200,
-    headers: {
-    },
-    body: {
-      label,
-      icon,
-      splToken,
-      MERCHANT_WALLET
+  return json(
+    {
+      status: 200,
+      headers: {
+      },
+      body: {
+        label,
+        icon,
+        splToken,
+        MERCHANT_WALLET
+      }
     }
-  };
+  )
 }
 
 
-const splToken = new PublicKey(process.env.USDC_MINT as String);
-const MERCHANT_WALLET = new PublicKey(process.env.MERCHANT_WALLET as String);
-const connection = new Connection(`${process.env.HTTPS_RPC_ENDPOINT}`, 'confirmed')
-
 /** @type {import('@sveltejs/kit').RequestHandler} */
-export async function POST({ request }) {
+export async function POST( event : any ) {
 
   // Account provided in the transaction request body by the wallet.
-  const accountField = request.body?.account;
+  const accountField = event.request.body?.account;
   if (!accountField) throw new Error('missing account');
 
   const sender = new PublicKey(accountField);
@@ -57,7 +60,7 @@ export async function POST({ request }) {
 
   // add the instruction to the transaction
   transaction.add(splTransferIx);
-  transaction.partialSign( keypair );
+  transaction.partialSign( Keypair.fromSecretKey( LOCAL_KEYPAIR ) );
 
 
   // Serialize and return the unsigned transaction.
@@ -69,5 +72,7 @@ export async function POST({ request }) {
   const base64Transaction = serializedTransaction.toString('base64');
   const message = 'Thank you for your purchase of ExiledApe #518';
 
-  return { status: 201 };
+  return json(
+    { status: 201 }
+  )
 }

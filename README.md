@@ -1,4 +1,4 @@
-# Replication (80%)
+# Replication 
 Understand, try and play with the Solana SDK on Svelte Kit. Use the following steps to get started.
 ![alt text](https://github.com/Jonas002/images/blob/main/svelte-kit-solana-app.png?raw=true)
 
@@ -24,39 +24,7 @@ yarn dev --open
 ```
 
 
-# Folder Structure (10%)
-```bash
-solana-sveltekit-app/
-├ src/ 
-│ ├ lib/
-│ │ ├ server/ 
-│ │ │ └ [your server-only lib files]
-│ │ └ [your lib files]
-│ ├ params/
-│ │ └ [your param matchers]
-│ ├ routes/ (-> page paths)
-│ │ └ [your routes] 
-│ ├ app.html
-│ ├ error.html
-│ ├ hooks.client.js
-│ └ hooks.server.js
-├ static/
-│ └ [your static assets]
-├ tests/
-│ └ [your tests]
-├ package-lock.json
-├ package.json
-├ postcss.config.js
-├ README.md
-├ svelte.config.js
-├ tailwind.config.js
-├ tsconfig.json
-└ vite.config.js
-└ yarn.lock
-```
-
-
-# Requirements (10%)
+# Requirements
 - Required Packages
 	- Node.js (v18.15.1) 
 	- npm (v9.5.0)
