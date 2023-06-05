@@ -70,7 +70,7 @@ export async function POST( event : any ) {
   });
 
   const base64Transaction = serializedTransaction.toString('base64');
-  const message = 'Thank you for your purchase of ExiledApe #518';
+  const message = 'Thank you!';
 
   return json(
     { status: 201 }
