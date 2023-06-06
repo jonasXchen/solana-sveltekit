@@ -10,9 +10,6 @@
 
 </script>
 
-<button 
-    class={`p-2 rounded-md ${styling} ${styling === '' ? 'bg-primary' : ''}`}
-    on:click={() => handleClick()}
->
+<button class={`p-2 rounded-md ${styling === '' ? 'bg-primary' : styling}`} on:click={() => handleClick()}>
     {label}
 </button>
