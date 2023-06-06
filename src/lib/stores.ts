@@ -1,35 +1,32 @@
-import { Connection, clusterApiUrl, } from '@solana/web3.js'
-import { writable } from "svelte/store";
+import { Connection, clusterApiUrl, type Cluster, } from '@solana/web3.js'
+import { writable, type Writable } from "svelte/store";
+import { browser } from "$app/environment";
+
 
 
 // Export wallet cluster and cluster connection
-export let cluster : any = 'devnet'
-export let connectedCluster = writable( new Connection(clusterApiUrl('devnet'), 'confirmed') )
+let defaultCluster : Cluster = 'mainnet-beta'
+export let cluster : Writable<Cluster> = writable(defaultCluster as Cluster)
+export let connectedCluster = writable(new Connection(clusterApiUrl(defaultCluster), 'confirmed'))
 
-if (typeof localStorage !== 'undefined') {
-    let storedCluster = localStorage.getItem("cluster");
-    cluster = writable(storedCluster);
-} else {
-    cluster = writable('devnet')
+// Check cluster and set local storage and store
+let localStorageKeyForCluster = "cluster" 
+let localCluster : Cluster | undefined 
+if ( browser ) {
+    localCluster = localStorage.getItem(localStorageKeyForCluster) as Cluster
 }
 
-cluster.subscribe((value: string) => {
-    if (typeof localStorage !== 'undefined') {
-        localStorage.setItem("cluster", value);
+// Subscribe for changes in store, and set local storage
+cluster.subscribe((value: Cluster) => {
+    if (localCluster as Cluster) {
+        localStorage.setItem(localStorageKeyForCluster, value);
     }
 });
 
 
 
 // For Dark mode
-export let theme : any;
-
-if (typeof localStorage !== 'undefined') {
-    let storedTheme = localStorage.getItem("theme");
-    theme = writable(storedTheme);
-} else {
-    theme = writable("dark")
-}
+export let theme : Writable<string> = writable("dark")
 
 theme.subscribe((value: string) => {
     if (typeof localStorage !== 'undefined') {

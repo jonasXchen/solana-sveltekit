@@ -10,9 +10,8 @@
 		{ name: 'mainnet-beta'},
 	]
 
-
     // Set cluster connection via store
-	function setConnection() {
+	function handleSubmit() {
 
 		// Set new cluster and connection in store
 		cluster.set(
@@ -27,9 +26,9 @@
 	}
 
 	// Input/Output variables used
-	let cluster_selected : Cluster = $cluster
+	let cluster_selected : Cluster = 'mainnet-beta'
 
-	setConnection()
+	handleSubmit()
 
 </script>
 
@@ -39,7 +38,7 @@
 	<!-- User Input -->
 	<div>
 		<label for="Cluster">Cluster:</label>
-		<select class='text-black' bind:value={cluster_selected} on:change={setConnection}>
+		<select class='text-black' bind:value={cluster_selected} on:change="{handleSubmit}">
 			{#each cluster_options as cluster}
 				<option class='text-black' value={cluster.name}>
 					{cluster.name}

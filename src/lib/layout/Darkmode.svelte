@@ -4,13 +4,6 @@
     import moon from '$lib/assets/images/darkmode/moon.svg';
     import { onMount } from 'svelte';
 
-    // onMount(() => {
-    //     if ($theme == "light") {
-    //         window.document.documentElement.classList.toggle('dark')
-    //     } else if ($theme == "dark") {
-    //         window.document.documentElement.classList.toggle('light')
-    //     }
-    // })
 
     function toggle() {
         if (window.document.documentElement.classList.value == 'dark') {
