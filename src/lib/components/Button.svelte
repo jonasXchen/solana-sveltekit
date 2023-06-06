@@ -4,13 +4,15 @@
     export let styling: string = '';
     export let onClick: () => Promise<any> | any = () => undefined;
 
-    async function handleClick(){
+    async function handleClick() : Promise<any>{
         await onClick()
     }
 
-
 </script>
 
-<button class="p-2 bg-primary rounded-md {styling}" on:click={() => handleClick()}>
+<button 
+    class={`p-2 rounded-md ${styling} ${styling === '' ? 'bg-primary' : ''}`}
+    on:click={() => handleClick()}
+>
     {label}
 </button>

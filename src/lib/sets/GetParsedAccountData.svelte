@@ -15,10 +15,11 @@
 		getParsedAccountInfo,
 		subscribeAccountInfo
 	} from '../utils/systemProgram'
+  import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
 
 
 	// Input/Output variables used
-	let pubKey : string
+	let pubKey : PublicKey | string
 	$ : pubKey
 	let accountData : RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null> | AccountInfo<Buffer> |  null
 	let subscribedAccountInfoChange : number
@@ -83,6 +84,10 @@
 					<a href='https://solana.fm/address/{pubKey}?cluster={$cluster}' target="_blank" rel="noopener noreferrer">
 						<Button label='Check Explorer'/>
 					</a>					
+				</div>
+
+				<div class="mt-1 mr-2 mb-1">
+					<Button label='Copy Wallet' styling='bg-blue-600' onClick={() => pubKey = $walletStore.publicKey|| ''}/>
 				</div>
 			
 

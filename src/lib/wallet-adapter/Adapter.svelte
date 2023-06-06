@@ -8,7 +8,7 @@
 		ConnectionProvider
 	} from './index';
 
-	import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+	import { PhantomWalletAdapter, SolflareWalletAdapter, BackpackWalletAdapter } from '@solana/wallet-adapter-wallets';
 	import { onMount } from 'svelte'
 
 	const localStorageKey = 'walletAdapter';
@@ -25,7 +25,8 @@
 
 	let wallets = [
         new PhantomWalletAdapter(), 
-        new SolflareWalletAdapter()
+        new SolflareWalletAdapter(),
+		new BackpackWalletAdapter()
     ];
 
 </script>

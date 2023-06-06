@@ -63,6 +63,7 @@
 		<div>
 			<Button label='Send Transaction' onClick={() => transferSol($walletStore, $connectedCluster, new PublicKey(source), new PublicKey(recipient), +solAmount)}/>
 			<Button label='Airdrop' onClick={() => airDrop($connectedCluster, new PublicKey(recipient), +solAmount)}/>
+			<Button label='Copy Wallet' styling='bg-blue-600' onClick={() => recipient = $walletStore.publicKey|| ''}/>
 		</div>
 
 	</div>

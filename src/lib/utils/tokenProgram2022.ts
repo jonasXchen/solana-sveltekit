@@ -5,7 +5,8 @@ import {
     SystemProgram,
     Keypair,
     type Signer,
-    type Commitment
+    type Commitment,
+    TransactionInstruction
 } from '@solana/web3.js'
 
 // Create Instructions
@@ -22,12 +23,13 @@ import {
     createInitializeMint2Instruction,
     createCloseAccountInstruction,
     createAssociatedTokenAccountInstruction,
-    createMintToInstruction,
+    createMintToCheckedInstruction,
     createTransferCheckedWithFeeInstruction,
     getAssociatedTokenAddressSync,
     getAccount,
     getMint,
-    getTransferFeeConfig
+    getTransferFeeConfig,
+    createTransferCheckedInstruction
 } from "@solana/spl-token"
 
 import type { WalletStore } from '@svelte-on-solana/wallet-adapter-core';
@@ -75,10 +77,8 @@ export class MintConfigData {
     }
 }
 
-export async function createMintWithExtensionsTx(connection: Connection, signerPubkey: PublicKey, configData: MintConfigData, mintKeypair?: Signer) : Promise<Transaction> {
+export async function createMint2Tx(connection: Connection, signerPubkey: PublicKey, configData: MintConfigData, mintKeypair?: Signer, programId: PublicKey = TOKEN_2022_PROGRAM_ID) : Promise<Transaction> {
 
-
-    let programId = TOKEN_2022_PROGRAM_ID // New Token-2022 Program Id
 
     // Set extensions
     let extensions : ExtensionType[] = []
@@ -173,14 +173,12 @@ export async function createMintWithExtensionsTx(connection: Connection, signerP
 
 }
 
-export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | string) {
+export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
 
     
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
     }
-    
-    let programId = TOKEN_2022_PROGRAM_ID // New Token-2022 Program Id
 
     let tx = new Transaction()
     tx.add(
@@ -190,7 +188,7 @@ export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | 
     return tx
 }
 
-export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string) {
+export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
     }
@@ -198,21 +196,25 @@ export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string)
         tokenOwner = new PublicKey(tokenOwner)
     }
 
-    let programId = TOKEN_2022_PROGRAM_ID
-
-    let ata = getAssociatedTokenAddressSync(
-        mint as PublicKey,
-        tokenOwner as PublicKey,
-        false, // false : Allow the owner account to be a PDA (Program Derived Address)
-        programId, // programId : SPL Token program account
-        // ASSOCIATED_TOKEN_PROGRAM_ID // associatedTokenProgramId : SPL Associated Token program account
-    );
+    // Check Ata and find Ata if needed
+    let ata
+    if(PublicKey.isOnCurve(tokenOwner.toBuffer())) {
+        ata = getAssociatedTokenAddressSync(
+            mint as PublicKey,
+            tokenOwner as PublicKey,
+            false, // false : Allow the owner account to be a PDA (Program Derived Address)
+            programId, // programId : SPL Token program account
+            ASSOCIATED_TOKEN_PROGRAM_ID // associatedTokenProgramId : SPL Associated Token program account
+        );
+    } else {
+        ata = tokenOwner
+    }
 
 
     return ata
 }
 
-export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | string, payer: PublicKey | string) {
+export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | string, payer: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
@@ -224,9 +226,7 @@ export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | st
         payer = new PublicKey(payer)
     }
 
-    let programId = TOKEN_2022_PROGRAM_ID
-
-    let ata = getAta(mint, tokenOwner)
+    let ata = getAta(mint, tokenOwner, programId)
 
     // Create New Transaction
     let tx = new Transaction()
@@ -245,9 +245,7 @@ export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | st
     return tx
 }
 
-export async function checkAtaExist(connection: Connection, ata: PublicKey, commitment: Commitment = 'confirmed') {
-
-    let programId = TOKEN_2022_PROGRAM_ID
+export async function checkAtaExist(connection: Connection, ata: PublicKey, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
     
     try {
         await getAccount(connection, ata, commitment, programId);
@@ -261,28 +259,45 @@ export async function checkAtaExist(connection: Connection, ata: PublicKey, comm
 }
 
 
-export async function createMintTokenTx(connection: Connection, mint: PublicKey | string, ata: PublicKey | string, mintAuthority: PublicKey, amount: number){
+export async function createMintTokenTx(connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, mintAuthority: PublicKey, amount: number, programId: PublicKey = TOKEN_2022_PROGRAM_ID){
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
     }
-    if (typeof ata == 'string') {
-        ata = new PublicKey(ata)
+    if (typeof recipient == 'string') {
+        recipient = new PublicKey(recipient)
     }
-
-    let programId = TOKEN_2022_PROGRAM_ID
 
     // Create New Transaction
     let tx = new Transaction()
     let mintInfo = await getMint(connection, mint, undefined, programId)
+    let ata : PublicKey = recipient
+
+
+    // Check ata, create ata if needed
+    if (PublicKey.isOnCurve(recipient)) {
+        ata = getAta(mint, recipient, programId)
+        tx.add(
+            createAssociatedTokenAccountInstruction(
+                mintAuthority, // PublicKey of payer
+                ata, // PublicKey of associatedToken
+                recipient, // PublicKey of owner
+                mint, // PublicKey of mintAccount
+                programId, // programId : SPL Token program account,
+                ASSOCIATED_TOKEN_PROGRAM_ID // associatedTokenProgramId : SPL Associated Token program account
+            )
+        )
+    } 
+
 
     // Add createMintToInstruction
     tx.add(
-        createMintToInstruction(
+        createMintToCheckedInstruction(
             mint, // PublicKey of mintAccount
             ata, // PublicKey of recipient token account
             mintAuthority, // PublicKey of mintAuthority
-            amount * (10**mintInfo.decimals), // number
+            amount * (10**mintInfo.decimals), // amount
+            mintInfo.decimals, // decimals
             [], // no other signers
             programId, // programId : SPL Token program account,
         )
@@ -292,7 +307,7 @@ export async function createMintTokenTx(connection: Connection, mint: PublicKey 
 
 }
 
-export async function createTokenTransferTx(connection: Connection, wallet: WalletStore, mint: PublicKey | string, recipient: PublicKey | string, amount: number, commitment: Commitment = 'confirmed'){
+export async function createTokenTransferTx(connection: Connection, wallet: WalletStore, mint: PublicKey | string, recipient: PublicKey | string, amount: number, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
@@ -301,17 +316,15 @@ export async function createTokenTransferTx(connection: Connection, wallet: Wall
         recipient = new PublicKey(recipient)
     }
 
-    let programId = TOKEN_2022_PROGRAM_ID
-
     // Create New Transaction
     let tx = new Transaction()
 
     // Get source ATA
-    let tokenSource = getAta(mint, wallet.publicKey!)
+    let tokenSource = getAta(mint, wallet.publicKey!, programId)
 
     // Get recipient ATA
-    let tokenRecipient = getAta(mint, recipient)
-    let recipientAtaExist = await checkAtaExist(connection, tokenRecipient)
+    let tokenRecipient = getAta(mint, recipient, programId)
+    let recipientAtaExist = await checkAtaExist(connection, tokenRecipient, commitment, programId)
     if (!recipientAtaExist) {
         tx.add(
             createAssociatedTokenAccountInstruction(
@@ -335,26 +348,41 @@ export async function createTokenTransferTx(connection: Connection, wallet: Wall
 
     // Check FeeConfig and get transfer amount and fee basis points 
     let feeConfig = getTransferFeeConfig(mintInfo)
-    let transferAmount = BigInt(amount * 10**mintInfo.decimals)
-    let fee = (transferAmount * BigInt(feeConfig!.newerTransferFee.transferFeeBasisPoints)) / BigInt(10000)
+    let transferAmount = BigInt(amount * 10**mintInfo.decimals) 
+    let transferCheckedIx : TransactionInstruction
 
-    let transferCheckedIx = createTransferCheckedWithFeeInstruction(
-        tokenSource,
-        mint,
-        tokenRecipient,
-        wallet.publicKey!,
-        transferAmount,
-        mintInfo.decimals,
-        fee,
-        [],
-        programId
-    )
+    if (feeConfig === null) {
+        transferCheckedIx = createTransferCheckedInstruction(
+            tokenSource,
+            mint,
+            tokenRecipient,
+            wallet.publicKey!,
+            transferAmount,
+            mintInfo.decimals,
+            [],
+            programId
+        )
+        tx.add(
+            transferCheckedIx
+        )
+    } else {
+        let fee = ((transferAmount * BigInt(feeConfig!.newerTransferFee.transferFeeBasisPoints)) / BigInt(10_000) > feeConfig!.newerTransferFee.maximumFee) ? (feeConfig!.newerTransferFee.maximumFee) : ((transferAmount * BigInt(feeConfig!.newerTransferFee.transferFeeBasisPoints)) / BigInt(10_000))
 
-
-    // Add createMintToInstruction
-    tx.add(
-        transferCheckedIx
-    )
+        transferCheckedIx = createTransferCheckedWithFeeInstruction(
+            tokenSource,
+            mint,
+            tokenRecipient,
+            wallet.publicKey!,
+            transferAmount,
+            mintInfo.decimals,
+            fee,
+            undefined,
+            programId
+        )
+        tx.add(
+            transferCheckedIx
+        )
+    }
 
     return tx
 

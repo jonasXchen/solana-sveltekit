@@ -8,7 +8,8 @@ export function setConnection (cluster: Cluster, custom?: string, commitment?: C
     if (custom) {
         connection = writable(new Connection(custom, commitment))
     } else {
-        connection = writable(new Connection(clusterApiUrl(cluster), commitment))
+        // connection = writable(new Connection(clusterApiUrl(cluster), commitment))
+        connection = writable(new Connection('http://127.0.0.1:8899', 'confirmed'))
     }
 
     setContext('connection', connection)

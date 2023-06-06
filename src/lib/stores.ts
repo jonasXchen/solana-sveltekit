@@ -5,7 +5,7 @@ import { browser } from "$app/environment";
 
 
 // Export wallet cluster and cluster connection
-let defaultCluster : Cluster = 'mainnet-beta'
+let defaultCluster : Cluster = 'devnet'
 export let cluster : Writable<Cluster> = writable(defaultCluster as Cluster)
 export let connectedCluster = writable(new Connection(clusterApiUrl(defaultCluster), 'confirmed'))
 

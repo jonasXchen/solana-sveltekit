@@ -8,7 +8,12 @@
 		{ name: 'devnet'},
 		{ name: 'testnet'},
 		{ name: 'mainnet-beta'},
+		{ name: 'localnet'}
 	]
+
+	// Input/Output variables used
+	let cluster_selected : Cluster | 'localnet' = 'devnet'
+	let clusterUrl : string
 
     // Set cluster connection via store
 	function handleSubmit() {
@@ -17,16 +22,22 @@
 		cluster.set(
 			cluster_selected as Cluster
 		)
+
+		if (cluster_selected == 'localnet') {
+			clusterUrl = 'http://127.0.0.1:8899'
+		} else {
+			clusterUrl = clusterApiUrl(cluster_selected as Cluster)
+		}
+		
 		connectedCluster.set(
 			// new Connection('https://rpc.helius.xyz/?api-key=72d348d8-4037-4fe1-a4d3-fe9e271be940', 'confirmed')
-			new Connection(clusterApiUrl(cluster_selected as Cluster), 'confirmed') 
+			new Connection(clusterUrl, 'confirmed') 
 			// new Connection('https://devnet.genesysgo.net/') 
 		)
 
 	}
 
-	// Input/Output variables used
-	let cluster_selected : Cluster = 'mainnet-beta'
+
 
 	handleSubmit()
 

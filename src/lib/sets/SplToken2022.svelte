@@ -11,8 +11,9 @@
 
     // Web3.js library and transactions
     import type { PublicKey, Connection } from '@solana/web3.js'
-    import { createMintWithExtensionsTx, MintConfigData, createCloseMintTx, getAta, checkAtaExist, createAtaTx, createMintTokenTx, createTokenTransferTx } from '../utils/tokenProgram2022'
+    import { createMint2Tx, MintConfigData, createCloseMintTx, getAta, checkAtaExist, createAtaTx, createMintTokenTx, createTokenTransferTx } from '../utils/tokenProgram2022'
     import signAndSendTx from '../utils/signAndSendTransaction'
+    import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 
 
     // States of Signatures
@@ -23,14 +24,15 @@
     let closeMintSignature : string
 
     // States of Accounts
-    let mint :  PublicKey | string | null
-    let tokenOwner :  PublicKey | string | null
-    let recipient :  PublicKey | string | null
-    let ata :  PublicKey | string | null
+    let mint :  PublicKey | string
+    let tokenOwner :  PublicKey | string
+    let ata : PublicKey
+    let recipientOfTransfer :  PublicKey | string
+    let programId = TOKEN_2022_PROGRAM_ID
 
     // States of Token Operations
-    let transferAmount : number
-    let mintAmount : number
+    let transferAmount : number = 1000  
+    let mintAmount : number = 1000000
 
     // States of Checkboxes for Mint
     let decimals : number = 0
@@ -46,7 +48,7 @@
         
          // Create tx to create mint and sign with wallet and send Transaction
         let configData = new MintConfigData(decimals, isCloseAuthority, isNonTransferable, feeBasisPoints, maxFee, interestRate)
-        let tx = await createMintWithExtensionsTx(connection, wallet.publicKey!, configData)
+        let tx = await createMint2Tx(connection, wallet.publicKey!, configData, undefined, programId)
         mintSignature = await signAndSendTx(connection, wallet, tx)
 
         // Set mint
@@ -59,7 +61,7 @@
     async function closeMint(wallet: WalletStore, connection: Connection, mint: PublicKey | string) {
         
         // Create tx to close mint and sign with wallet and send Transaction
-        let tx = await createCloseMintTx(wallet.publicKey!, mint)
+        let tx = await createCloseMintTx(wallet.publicKey!, mint, programId)
         closeMintSignature = await signAndSendTx(connection, wallet, tx)
 
     }
@@ -72,10 +74,10 @@
         ata = getAta(mint, tokenOwner)
 
         // Check if ata exists
-        let ataExist = await checkAtaExist(connection, ata)
+        let ataExist = await checkAtaExist(connection, ata, undefined, programId)
         if (ataExist == false) {
             // Create tx to create token account and sign with wallet and send Transaction
-            let tx = createAtaTx(mint, tokenOwner, wallet.publicKey!)
+            let tx = createAtaTx(mint, tokenOwner, wallet.publicKey!, programId)
             createTokenAccountSignature = await signAndSendTx(connection, wallet, tx)
         }
 
@@ -84,19 +86,19 @@
 
 
     // Mint to Token Account
-    async function mintTokenToAccount(wallet : any, connection: Connection, mint : PublicKey | string, ata: PublicKey | string, tokenAmount: number ) {
+    async function mintTokenToAccount(wallet : any, connection: Connection, mint : PublicKey | string, ata: PublicKey | string, tokenAmount: number) {
 
         // Create tx to mint token and sign with wallet and send Transaction
-        let tx = await createMintTokenTx(connection, mint, ata, wallet.publicKey!, tokenAmount)
+        let tx = await createMintTokenTx(connection, mint, ata, wallet.publicKey!, tokenAmount, programId)
         mintTokenSignature = await signAndSendTx(connection, wallet, tx)
 	}
 
 
         // Transfer Token
-    async function transferToken(wallet : any, connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, tokenAmount: number ) {
+    async function transferToken(wallet : any, connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, tokenAmount: number) {
 
         // Create tx to transfer token and sign with wallet and send Transaction
-        let tx = await createTokenTransferTx(connection, wallet, mint, recipient, tokenAmount)
+        let tx = await createTokenTransferTx(connection, wallet, mint, recipient, tokenAmount, undefined, programId)
         transferTokenSignature = await signAndSendTx(connection, wallet, tx)
 
     }
@@ -115,7 +117,6 @@
         <!-- Create Mint -->
         <div>
             <!-- User Input -->
-            <p>SPL Token:</p>
             <div class="grid grid-cols-2 gap-x-4">
                 <div>
                     <label for="Decimals" class="text-xs">Decimals</label>
@@ -162,15 +163,19 @@
 
         </div>
 
-        <!-- Create Associated Token Account -->
+        <!-- Close Mint -->
         <div class="grid grid-cols-1 space-y-4 ">
             <!-- User Input -->
             <div>
                 <label for="Mint">Mint:</label>
                 <input class="text-black w-full" bind:value={mint} placeholder="Enter mint account address ...">
+                
             </div>
             <div>
                 <Button label='Close Mint' onClick={() => closeMint($walletStore, $connectedCluster, mint)}/>
+            </div>
+            <div>
+                
                 <!-- Response Output -->
                 <div>
                     {#await closeMintSignature}
@@ -184,15 +189,18 @@
                     {/await}
                 </div>
             </div>
+        </div>
 
-
-
+        
+        <!-- Create Associated Token Account -->
+        <div class="grid grid-cols-1 space-y-4 ">
             <div>
                 <label for="TokenAccountOwner">Token Account Owner:</label>
                 <input class="text-black w-full" bind:value={tokenOwner} placeholder="Enter recipient token owner address ...">
             </div>
             <div>
                 <Button label='Create Token Account' onClick={() => getOrcreateTokenAccount($walletStore, $connectedCluster, mint, tokenOwner)}/>
+                <Button label='Copy Wallet' styling='bg-blue-600' onClick={() => tokenOwner = $walletStore.publicKey || ''}/>
                 <!-- Response Output -->
                 <div>
                     {#await createTokenAccountSignature}
@@ -206,9 +214,6 @@
                     {/await}
                 </div>
             </div>
-
-
-
         </div>
 
         <!-- Mint to Associated Token Account -->
@@ -241,10 +246,12 @@
             <!-- User Input -->
             <div>
                 <label for="DestinationAccount">Destination Token Account:</label>
-                <input class="text-black w-full mb-4" bind:value={recipient} placeholder="Enter destination token account address ...">
+                <input class="text-black w-full mb-4" bind:value={recipientOfTransfer} placeholder="Enter destination token account address ...">
                 <label for="TransferAmount">Transfer Amount:</label>
                 <input class="text-black w-full mb-4" type="number" min="0" step="1" bind:value={transferAmount} placeholder="Enter token amount...">
-                <Button label='Transfer Token' onClick={() => transferToken($walletStore, $connectedCluster, mint, recipient, transferAmount)}/>
+                <Button label='Transfer Token' onClick={() => transferToken($walletStore, $connectedCluster, mint, recipientOfTransfer, transferAmount)}/>
+                <Button label='Copy Wallet' styling='bg-blue-600' onClick={() => recipientOfTransfer = $walletStore.publicKey || ''}/>
+                <Button label='Copy Ata' styling='bg-blue-600' onClick={() => recipientOfTransfer = ata}/>
                 <!-- Response Output -->
                 <div>
                     {#await transferTokenSignature}
