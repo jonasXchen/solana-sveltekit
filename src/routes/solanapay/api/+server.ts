@@ -1,15 +1,16 @@
 
-import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import { createSplTransferIx } from '$lib/utils/createSplTransferIx'
 import { json } from '@sveltejs/kit';
-import { PUBLIC_HTTPS_RPC_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_WALLET } from '$env/static/public'
-import { PRIVATE_LOCAL_KEYPAIR } from '$env/static/private'
+import { PUBLIC_HTTPS_RPC_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
+import { PRIVATE_MERCHANT_PRIVATE_KEY } from '$env/static/private'
+import { createTransfer } from '@solana/pay'
+import BigNumber from 'bignumber.js';
 
 const connection = new Connection(`${PUBLIC_HTTPS_RPC_ENDPOINT}`, 'confirmed')
 const splToken = new PublicKey(PUBLIC_USDC_DEV_MINT as String);
-const MERCHANT_WALLET = new PublicKey(PUBLIC_MERCHANT_WALLET as String);
-const LOCAL_KEYPAIR = Uint8Array.from(PRIVATE_LOCAL_KEYPAIR! as unknown as number[])
-
+const MERCHANT_PUBKEY = new PublicKey(PUBLIC_MERCHANT_PUBKEY);
+const MERCHANT_PRIVATE_KEY = new Uint8Array(JSON.parse(PRIVATE_MERCHANT_PRIVATE_KEY))
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export function GET( event : any ) {
@@ -26,7 +27,7 @@ export function GET( event : any ) {
         label,
         icon,
         splToken,
-        MERCHANT_WALLET
+        MERCHANT_PUBKEY
       }
     }
   )
@@ -36,43 +37,81 @@ export function GET( event : any ) {
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function POST( event : any ) {
 
+
+  const body = await event.request.json()
+  const urlParams = event.url.searchParams
+  console.log(event)
+
+  const recipientField = urlParams.get('recipient');
+  if (!recipientField) throw new Error('missing recipient');
+  if (typeof recipientField !== 'string') throw new Error('invalid recipient');
+  const recipient = new PublicKey(recipientField);
+
+  const amountField = urlParams.get('amount');
+  if (!amountField) throw new Error('missing amount');
+  if (typeof amountField !== 'string') throw new Error('invalid amount');
+  const amount = new BigNumber(amountField);
+
+  const splTokenField = urlParams.get('spl-token');
+  if (splTokenField && typeof splTokenField !== 'string') throw new Error('invalid spl-token');
+  const splToken = splTokenField ? new PublicKey(splTokenField) : undefined;
+
+  const referenceField = urlParams.get('reference');
+  if (!referenceField) throw new Error('missing reference');
+  if (typeof referenceField !== 'string') throw new Error('invalid reference');
+  const reference = new PublicKey(referenceField);
+
+  const memoParam = urlParams.get('memo');
+  if (memoParam && typeof memoParam !== 'string') throw new Error('invalid memo');
+  const memo = memoParam || undefined;
+
+  const messageParam = urlParams.get('message');
+  if (messageParam && typeof messageParam !== 'string') throw new Error('invalid message');
+  const message = messageParam || undefined;
+
   // Account provided in the transaction request body by the wallet.
-  const accountField = event.request.body?.account;
+  const accountField = body.account;
   if (!accountField) throw new Error('missing account');
+  if (typeof accountField !== 'string') throw new Error('invalid account');
+  const account = new PublicKey(accountField);
 
-  const sender = new PublicKey(accountField);
 
-  // create spl transfer instruction
-  let amount = 1
-  const splTransferIx = await createSplTransferIx(connection, splToken, sender, amount, MERCHANT_WALLET);
 
-  console.log(splTransferIx)
-
-  // create the transaction
-  const latestBlockhash = await connection.getLatestBlockhash()
-  const transaction = new Transaction(
+  // const splTransferIx = await createSplTransferIx(connection, splToken, sender, amount, MERCHANT_WALLET);
+  const tx = await createTransfer(
+    connection,
+    account, 
     {
-      blockhash: latestBlockhash.blockhash,
-      lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      feePayer: MERCHANT_WALLET
+      recipient,
+      splToken,
+      amount,
+      reference,
+      memo
     }
-  );
+  )
 
-  // add the instruction to the transaction
-  transaction.add(splTransferIx);
-  transaction.partialSign( Keypair.fromSecretKey( LOCAL_KEYPAIR ) );
+  tx.feePayer = MERCHANT_PUBKEY
+  const signer = Keypair.fromSecretKey( MERCHANT_PRIVATE_KEY )
+  console.log(signer)
+
+  // Partially sign to take on fees
+  tx.partialSign( signer );
 
 
   // Serialize and return the unsigned transaction.
-  const serializedTransaction = transaction.serialize({
+  const serializedTransaction = tx.serialize({
       verifySignatures: false,
       requireAllSignatures: false,
   });
 
   const base64Transaction = serializedTransaction.toString('base64');
-  const message = 'Thank you!';
 
   return json(
-    { status: 201 }
+    { 
+      status: 200,
+      transaction: base64Transaction,
+      message: message
+
+    }
   )
 }

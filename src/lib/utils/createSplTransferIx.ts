@@ -15,6 +15,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 export async function createSplTransferIx(connection: Connection, splToken: PublicKey, sender : PublicKey, amount: number, merchant: PublicKey)  {
+
     const senderInfo = await connection.getAccountInfo(sender);
     if (!senderInfo) throw new Error('sender not found');
 
@@ -62,3 +63,4 @@ export async function createSplTransferIx(connection: Connection, splToken: Publ
 
     return splTransferIx;
 }
+
