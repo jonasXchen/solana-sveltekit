@@ -1,7 +1,7 @@
 <script lang=ts>
     import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
     import { PublicKey, Keypair } from '@solana/web3.js';
-    import type { Amount, References, TransferRequestURLFields } from '@solana/pay';
+    import type { Amount, References } from '@solana/pay';
     import type QRCodeStyling from '@solana/qr-code-styling';
     import BigNumber from 'bignumber.js';
     

@@ -1,4 +1,5 @@
 <script lang=ts>
+	import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
 	import {
 		PublicKey,
 		type ParsedAccountData,
@@ -7,15 +8,15 @@
 		type Connection
 	} from '@solana/web3.js';
 
-	import { cluster, connectedCluster, notify } from "$lib/stores";
-	import Button from '../components/Button.svelte';
-
 	import {
 		getAccountInfo,
 		getParsedAccountInfo,
 		subscribeAccountInfo
 	} from '../utils/systemProgram'
-  import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
+
+	import { cluster, connectedCluster, notify } from "$lib/stores";
+	import Button from '../components/Button.svelte';
+
 
 
 	// Input/Output variables used
