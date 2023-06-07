@@ -57,11 +57,12 @@
 
 <!-- HTML + SVELTE -->
 <section class="bg-dark p-4 space-y-4 w-1/2 rounded-md text-black dark:text-white">
+	<h1>Check / Subscribe to Accounts</h1>
 	<div>
 		<!-- User Input -->
 		<div>
 			<div>
-				<label for="Account">Account:</label>
+				<label for="Account"></label>
 				<input class="text-black w-full mb-2" bind:value={pubKey} placeholder="Enter address ...">	
 			</div>
 

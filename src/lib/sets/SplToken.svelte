@@ -95,7 +95,7 @@
 
 <!-- HTML + SVELTE -->
 <section class="bg-dark p-4 space-y-4 w-11/12 rounded-md text-black dark:text-white">
-    <h1>SPL Program</h1>
+    <h1>Interact with Token Program</h1>
     <div class="grid grid-cols-1 space-y-8">
         <!-- Create Mint -->
         <div class="grid grid-cols-1 space-y-4 ">

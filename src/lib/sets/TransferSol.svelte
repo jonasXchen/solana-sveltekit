@@ -32,7 +32,7 @@
 	let transferSignature: string;
 	let source : PublicKey | any;
 	let recipient : PublicKey | any; 
-	let solAmount : number | string = 0.5;
+	let solAmount : number | string = 2.0;
 
 	// Enable Reactivity, "Source" automatically set to connected wallet
 	$: source = $walletStore.publicKey ? $walletStore.publicKey : null
@@ -41,7 +41,7 @@
 
 <!-- HTML + SVELTE -->
 <section class="bg-dark p-4 space-y-4 w-1/2 rounded-md text-black dark:text-white">
-
+	<h1>Transfer / Airdrop SOL</h1>
 	<!-- Transfer & Airdrop Token -->
 	<div class="grid grid-cols-1 space-y-4">
 
