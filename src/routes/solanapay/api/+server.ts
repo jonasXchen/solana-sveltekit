@@ -22,6 +22,7 @@ export function GET( event : any ) {
     {
       status: 200,
       headers: {
+        "Content-Type": "application/json"
       },
       body: {
         label,
@@ -41,6 +42,7 @@ export async function POST( event : any ) {
   const body = await event.request.json()
   const urlParams = event.url.searchParams
   console.log(event)
+  console.log(event.url)
 
   const recipientField = urlParams.get('recipient');
   if (!recipientField) throw new Error('missing recipient');
@@ -114,9 +116,13 @@ export async function POST( event : any ) {
   return json(
     { 
       status: 200,
-      transaction: base64Transaction,
-      message: message
-
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        transaction: base64Transaction,
+        message: message
+      }
     }
   )
 }

@@ -30,15 +30,15 @@
         memo
     }
 
-    let txFields : ExtendedTxRequestURLFields = {
+    let txFields : any = {
         link,
         label,
         message,
         recipient,
         amount,
         splToken,
-        // reference,
-        // memo
+        reference,
+        memo
     }
 
     let QR: string | URL | QRCodeStyling
