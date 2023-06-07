@@ -90,11 +90,16 @@ export async function POST( event : any ) {
     }
   )
 
+  // Update fee payer
   tx.feePayer = MERCHANT_PUBKEY
-  const signer = Keypair.fromSecretKey( MERCHANT_PRIVATE_KEY )
-  console.log(signer)
+
+  // Get latest blockchash and block height
+  let latestBlockHash = await connection.getLatestBlockhash();
+  tx.recentBlockhash = latestBlockHash.blockhash;
+  tx.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight
 
   // Partially sign to take on fees
+  let signer = Keypair.fromSecretKey( MERCHANT_PRIVATE_KEY )
   tx.partialSign( signer );
 
 

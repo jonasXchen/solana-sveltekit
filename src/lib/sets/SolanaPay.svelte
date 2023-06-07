@@ -8,10 +8,10 @@
     import Button from '../components/Button.svelte'
 
     import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
-    import { PUBLIC_SOLANAPAY_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_WALLET } from '$env/static/public'
+    import { PUBLIC_SOLANAPAY_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
 
     let link : URL = new URL(PUBLIC_SOLANAPAY_ENDPOINT)
-    let recipient : PublicKey | string = new PublicKey(PUBLIC_MERCHANT_WALLET as String);
+    let recipient : PublicKey | string = new PublicKey(PUBLIC_MERCHANT_PUBKEY as String);
     let amount : Amount = BigNumber(1)
     let splToken : PublicKey = new PublicKey(PUBLIC_USDC_DEV_MINT as String);
     let reference : References = Keypair.generate().publicKey
