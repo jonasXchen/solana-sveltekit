@@ -14,7 +14,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-export async function createSplTransferIx(sender : PublicKey, connection: Connection, splToken: PublicKey, merchant: PublicKey) {
+export async function createSplTransferIx(connection: Connection, splToken: PublicKey, sender : PublicKey, amount: number, merchant: PublicKey)  {
     const senderInfo = await connection.getAccountInfo(sender);
     if (!senderInfo) throw new Error('sender not found');
 
@@ -36,8 +36,7 @@ export async function createSplTransferIx(sender : PublicKey, connection: Connec
 
     // You should always calculate the order total on the server to prevent
     // people from directly manipulating the amount on the client
-    let amount = 1;
-    amount = amount * 10 ** mint.decimals;
+    amount = amount * (10 ** mint.decimals);
 
     // Check that the sender has enough tokens
     const tokens = BigInt(String(amount));

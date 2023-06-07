@@ -5,16 +5,18 @@
     import BigNumber from 'bignumber.js';
     import Button from '../components/Button.svelte'
 
+    import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
+    import { PUBLIC_SOLANAPAY_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_WALLET } from '$env/static/public'
+
+
 
     let QR
-    // let url : URL = new URL(`solana:${process.env.SOLANAPAY_ENDPOINT}`)
-    let url : URL = new URL(`https://solana-sveltekit-jonasxchen.vercel.app/solanapay/api`)
-    let recipient : string
-    let amount : Amount
-    // let splToken : PublicKey = new PublicKey(process.env.USDC_DEV_MINT)
-    let splToken : PublicKey = new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr')
+    let url : URL = new URL(PUBLIC_SOLANAPAY_ENDPOINT)
+    let recipient : PublicKey | string = new PublicKey(PUBLIC_MERCHANT_WALLET as String);
+    let amount : Amount = BigNumber(1)
+    let splToken : PublicKey = new PublicKey(PUBLIC_USDC_DEV_MINT as String);
     let reference = Keypair.generate()
-    let label : string
+    let label : string = 'Product A'
     let message : string = "Thank you very much!"
     let memo : string
 
@@ -64,6 +66,7 @@
 		</div>
         <div>
             <Button label='Create QR' onClick={() => displayQR()}/>
+            <Button label='Copy Wallet' styling='bg-blue-600' onClick={() => recipient = $walletStore.publicKey || ''}/>
             {#if (QR)}
                 {@html `${QR_str}`} 
                 {url}

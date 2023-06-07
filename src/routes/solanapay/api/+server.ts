@@ -43,7 +43,8 @@ export async function POST( event : any ) {
   const sender = new PublicKey(accountField);
 
   // create spl transfer instruction
-  const splTransferIx = await createSplTransferIx(sender, connection, splToken, MERCHANT_WALLET);
+  let amount = 1
+  const splTransferIx = await createSplTransferIx(connection, splToken, sender, amount, MERCHANT_WALLET);
 
   console.log(splTransferIx)
 
