@@ -9,7 +9,7 @@
 	} from './index';
 
 	import { PhantomWalletAdapter, SolflareWalletAdapter, BackpackWalletAdapter } from '@solana/wallet-adapter-wallets';
-	import { onMount } from 'svelte'
+	import { browser } from "$app/environment";
 
 	const localStorageKey = 'walletAdapter';
 
@@ -17,9 +17,7 @@
 
 	// Get localStorage for cluster
 	let cluster : Cluster | undefined
-	onMount(() => {
-		cluster = localStorage.getItem('cluster') as Cluster
-	});
+	(browser) ? cluster = localStorage.getItem('cluster') as Cluster : 'devnet'
 
 	let network = clusterApiUrl(cluster)
 

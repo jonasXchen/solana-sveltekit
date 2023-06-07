@@ -1,8 +1,14 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
+import { nodePolyfills } from "vite-plugin-node-polyfills";
+
+
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [
+		sveltekit(), 
+		nodePolyfills()
+	],
 
 	// For including Buffer
 	resolve: {
@@ -12,6 +18,6 @@ export default defineConfig({
 	},
 	server: {
 		port: 3000
-	}
+	},	
 
 });
