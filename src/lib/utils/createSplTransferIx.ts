@@ -1,38 +1,44 @@
-import { 
-    Keypair,
+import type {
     Connection,
     PublicKey,
+    TransactionInstruction,
 } from "@solana/web3.js";
 
 import {
-    getAssociatedTokenAddress,
     getAccount,
     getMint,
-    createTransferCheckedInstruction
+    createTransferCheckedInstruction,
+    TOKEN_PROGRAM_ID
 } from '@solana/spl-token'
+
+import { getAta, checkAtaExist, createAtaTx } from '../utils/tokenProgram2022'
+
 import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-export async function createSplTransferIx(connection: Connection, splToken: PublicKey, sender : PublicKey, amount: number, merchant: PublicKey)  {
+export async function createSplTransferIx(connection: Connection, splToken: PublicKey, sender : PublicKey, amount: number, recipient: PublicKey, payer: PublicKey = sender, references?: PublicKey[])  {
 
-    const senderInfo = await connection.getAccountInfo(sender);
-    if (!senderInfo) throw new Error('sender not found');
+    let transferIxArray : TransactionInstruction[] = []
 
     // Get the sender's ATA and check that the account exists and can send tokens
-    const senderATA = await getAssociatedTokenAddress(splToken, sender);
-    const senderAccount = await getAccount(connection, senderATA);
-    if (!senderAccount.isInitialized) throw new Error('sender not initialized');
-    if (senderAccount.isFrozen) throw new Error('sender frozen');
+    const senderAta = getAta(splToken, sender, TOKEN_PROGRAM_ID);
+    const senderAccount = await getAccount(connection, senderAta, undefined, TOKEN_PROGRAM_ID);
+    if (!senderAccount.isInitialized) throw new Error('merchant not initialized');
+    if (senderAccount.isFrozen) throw new Error('merchant frozen');
+
 
     // Get the merchant's ATA and check that the account exists and can receive tokens
-    const merchantATA = await getAssociatedTokenAddress(splToken, merchant);
-    const merchantAccount = await getAccount(connection, merchantATA);
-    if (!merchantAccount.isInitialized) throw new Error('merchant not initialized');
-    if (merchantAccount.isFrozen) throw new Error('merchant frozen');
+    const recipientAta = getAta(splToken, recipient, TOKEN_PROGRAM_ID);
+    console.log(recipientAta.toString())
+    const recipientAtaExist = await checkAtaExist(connection, recipientAta, undefined, TOKEN_PROGRAM_ID);
+    if (!recipientAtaExist) { 
+        let createRecipientAtaIx = createAtaTx(splToken, recipient, payer, TOKEN_PROGRAM_ID).instructions[0]
+        transferIxArray.push(createRecipientAtaIx)
+    }
 
     // Check that the token provided is an initialized mint
-    const mint = await getMint(connection, splToken);
+    let mint = await getMint(connection, splToken);
     if (!mint.isInitialized) throw new Error('mint not initialized');
 
     // You should always calculate the order total on the server to prevent
@@ -45,22 +51,25 @@ export async function createSplTransferIx(connection: Connection, splToken: Publ
 
     // Create an instruction to transfer SPL tokens, asserting the mint and decimals match
     const splTransferIx = createTransferCheckedInstruction(
-        senderATA,
+        senderAta,
         splToken,
-        merchantATA,
+        recipientAta,
         sender,
         tokens,
         mint.decimals
     );
 
-    // Create a reference that is unique to each checkout session
-    const references = [new Keypair().publicKey];
 
     // add references to the instruction
-    for (const pubkey of references) {
-        splTransferIx.keys.push({ pubkey, isWritable: false, isSigner: false });
+    if (!(references === undefined)) {
+        for (const pubkey of references) {
+            splTransferIx.keys.push({ pubkey, isWritable: false, isSigner: false });
+        }
     }
 
-    return splTransferIx;
+    transferIxArray.push(splTransferIx)
+    console.log(JSON.stringify(transferIxArray, undefined, 4))
+
+    return transferIxArray;
 }
 

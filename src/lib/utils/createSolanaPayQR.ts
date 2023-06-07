@@ -1,4 +1,4 @@
-import { encodeURL, createQR, type TransactionRequestURLFields, type TransferRequestURLFields } from '@solana/pay';
+import { encodeURL, createQR, type TransferRequestURLFields } from '@solana/pay';
 import type QRCodeStyling from '@solana/qr-code-styling';
 
 
@@ -20,17 +20,19 @@ export async function createTxRequestQr( urlFields : any,  size: number | undefi
 
     let QR : QRCodeStyling
     let QR_str: string
-    // let url =  encodeURL(urlFields)
+    let endpoint : string = encodeURIComponent(String(urlFields['link']).replace(/\/\?/, '?'))
 
+    // Get Params
     let params = new URLSearchParams();
-
     for (const key in urlFields) {
         if (urlFields.hasOwnProperty(key) && !(key==='link')) {
           params.append(key, urlFields[key]);
+        } else if ((urlFields.hasOwnProperty(key) && (key==='link'))) {
+
         }
     }
-    
-    const url = `solana:${urlFields['link']}?${params.toString()}`;
+
+    let url = `solana:${endpoint}%3F${params.toString()}`;
 
     QR = createQR(url, size, background, color)
     await QR._getElement()
