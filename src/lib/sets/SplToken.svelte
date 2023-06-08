@@ -11,7 +11,7 @@
 
     // Web3.js library and transactions
     import type { PublicKey, Connection } from '@solana/web3.js'
-    import { createMint2Tx, MintConfigData, getAta, checkAtaExist, createAtaTx, createMintTokenTx, createTokenTransferTx } from '../utils/tokenProgram2022'
+    import { createMint2Tx, MintConfigData, getAta, checkAtaExist, createAtaTx, createMintTokenTx, createSplTransferTx } from '../utils/tokenProgram2022'
     import signAndSendTx from '../utils/signAndSendTransaction'
     import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
@@ -82,7 +82,7 @@
     async function transferToken(wallet : WalletStore, connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, tokenAmount: number) {
 
         // Create tx to transfer token and sign with wallet and send Transaction
-        let tx = await createTokenTransferTx(connection, wallet.publicKey!, mint, recipient, tokenAmount, wallet.publicKey!, undefined, programId)
+        let tx = await createSplTransferTx(connection, mint, wallet.publicKey!, tokenAmount, recipient, wallet.publicKey!, undefined, undefined, programId)
         transferTokenSignature = await signAndSendTx(connection, wallet, tx)
 
     }

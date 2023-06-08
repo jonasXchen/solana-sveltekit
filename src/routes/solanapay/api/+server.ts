@@ -1,9 +1,8 @@
 
-import { Connection, Keypair, PublicKey, Transaction, type Cluster, clusterApiUrl, TransactionInstruction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, Transaction, clusterApiUrl, TransactionInstruction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import BigNumber from 'bignumber.js';
 
-import { createSplTransferIx } from '$lib/utils/createSplTransferIx'
+import { createSplTransferTx } from '$lib/utils/tokenProgram2022'
 
 import { json } from '@sveltejs/kit';
 import { PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
@@ -29,7 +28,7 @@ export function GET( event : any ) {
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function POST( event : any ) {
-  // GoUtmGT6y5FnugtbeozghbvstzrqYP1WWc483Y4hFEPf
+
   let body = await event.request.json()
   let urlParams = event.url.searchParams
 
@@ -49,7 +48,7 @@ export async function POST( event : any ) {
   
   const programParam = urlParams.get('programId');
   if (programParam && typeof programParam !== 'string') throw new Error('invalid program');
-  const programId = programParam || TOKEN_PROGRAM_ID;
+  const programId = new PublicKey(programParam) || TOKEN_PROGRAM_ID;
 
 
   const labelParam = urlParams.get('label');
@@ -89,7 +88,7 @@ export async function POST( event : any ) {
   // Create Transfer Instruction based on provided token, if not then SOL Transfer
   let transferIxArray: TransactionInstruction[] = []
   if (!(splToken === undefined)) {
-    transferIxArray = await createSplTransferIx(connection, splToken, account, amount, recipient, MERCHANT_PUBKEY, [reference], programId);
+    transferIxArray = (await createSplTransferTx(connection, splToken, account, amount, recipient, MERCHANT_PUBKEY, [reference], undefined, programId)).instructions
   } else {
     transferIxArray = [ 
       SystemProgram.transfer( {

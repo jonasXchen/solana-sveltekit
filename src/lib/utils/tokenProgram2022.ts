@@ -307,7 +307,7 @@ export async function createMintTokenTx(connection: Connection, mint: PublicKey 
 
 }
 
-export async function createTokenTransferTx(connection: Connection, sender: PublicKey, mint: PublicKey | string, recipient: PublicKey | string, amount: number, payer: PublicKey = sender, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
+export async function createSplTransferTx(connection: Connection, mint: PublicKey | string, sender: PublicKey, amount: number, recipient: PublicKey | string, payer: PublicKey = sender, references? : PublicKey[], commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
@@ -315,8 +315,6 @@ export async function createTokenTransferTx(connection: Connection, sender: Publ
     if (typeof recipient == 'string') {
         recipient = new PublicKey(recipient)
     }
-
-    console.log(sender, sender.toString())
 
     // Create New Transaction
     let tx = new Transaction()
@@ -364,9 +362,18 @@ export async function createTokenTransferTx(connection: Connection, sender: Publ
             [],
             programId
         )
+
+        // add references to the instruction
+        if (!(references === undefined)) {
+            for (const pubkey of references) {
+                transferCheckedIx.keys.push({ pubkey, isWritable: false, isSigner: false });
+            }
+        }
+                
         tx.add(
             transferCheckedIx
         )
+
     } else {
         let fee = ((transferAmount * BigInt(feeConfig!.newerTransferFee.transferFeeBasisPoints)) / BigInt(10_000) > feeConfig!.newerTransferFee.maximumFee) ? (feeConfig!.newerTransferFee.maximumFee) : ((transferAmount * BigInt(feeConfig!.newerTransferFee.transferFeeBasisPoints)) / BigInt(10_000))
 
@@ -381,10 +388,21 @@ export async function createTokenTransferTx(connection: Connection, sender: Publ
             undefined,
             programId
         )
+
+        // add references to the instruction
+        if (!(references === undefined)) {
+            for (const pubkey of references) {
+                transferCheckedIx.keys.push({ pubkey, isWritable: false, isSigner: false });
+            }
+        }
+        
         tx.add(
             transferCheckedIx
         )
     }
+
+
+    
 
     return tx
 
