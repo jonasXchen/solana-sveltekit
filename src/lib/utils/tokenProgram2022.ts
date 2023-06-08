@@ -307,7 +307,7 @@ export async function createMintTokenTx(connection: Connection, mint: PublicKey 
 
 }
 
-export async function createTokenTransferTx(connection: Connection, wallet: WalletStore, mint: PublicKey | string, recipient: PublicKey | string, amount: number, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
+export async function createTokenTransferTx(connection: Connection, sender: PublicKey, mint: PublicKey | string, recipient: PublicKey | string, amount: number, payer: PublicKey = sender, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
@@ -316,11 +316,13 @@ export async function createTokenTransferTx(connection: Connection, wallet: Wall
         recipient = new PublicKey(recipient)
     }
 
+    console.log(sender, sender.toString())
+
     // Create New Transaction
     let tx = new Transaction()
 
     // Get source ATA
-    let tokenSource = getAta(mint, wallet.publicKey!, programId)
+    let tokenSource = getAta(mint, sender, programId)
 
     // Get recipient ATA
     let tokenRecipient = getAta(mint, recipient, programId)
@@ -328,7 +330,7 @@ export async function createTokenTransferTx(connection: Connection, wallet: Wall
     if (!recipientAtaExist) {
         tx.add(
             createAssociatedTokenAccountInstruction(
-                wallet.publicKey!, // PublicKey of payer
+                payer, // PublicKey of payer
                 tokenRecipient, // PublicKey of associatedToken
                 recipient, // PublicKey of owner
                 mint, // PublicKey of mintAccount
@@ -356,7 +358,7 @@ export async function createTokenTransferTx(connection: Connection, wallet: Wall
             tokenSource,
             mint,
             tokenRecipient,
-            wallet.publicKey!,
+            sender,
             transferAmount,
             mintInfo.decimals,
             [],
@@ -372,7 +374,7 @@ export async function createTokenTransferTx(connection: Connection, wallet: Wall
             tokenSource,
             mint,
             tokenRecipient,
-            wallet.publicKey!,
+            sender,
             transferAmount,
             mintInfo.decimals,
             fee,

@@ -8,11 +8,15 @@
     import { createTxRequestQr } from '../utils/createSolanaPayQR';
 
     import Button from '../components/Button.svelte';
+    import Select from '../components/Select.svelte';
     import { cluster } from '$lib/stores'
 
     
     import { PUBLIC_SOLANAPAY_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
+    import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from '@solana/spl-token';
 
+    let programs = [ TOKEN_PROGRAM_ID.toString(), TOKEN_2022_PROGRAM_ID.toString()]
+    
     let link : URL = new URL(PUBLIC_SOLANAPAY_ENDPOINT)
     let recipient : PublicKey | string = new PublicKey(PUBLIC_MERCHANT_PUBKEY as String);
     let amount : Amount = BigNumber(1)
@@ -21,6 +25,11 @@
     let label : string = "Product A"
     let message : string = "Thank you very much!"
     let memo : string = "test memo"
+
+    let programSelected : string = programs[0]
+    function updateProgram(){
+        programSelected = programSelected
+    }
 
 
     let txFields : any = {
@@ -32,7 +41,8 @@
         splToken,
         reference,
         memo,
-        cluster: $cluster
+        cluster: $cluster,
+        programId: programSelected
     }
 
     let QR: string | URL | QRCodeStyling
@@ -48,7 +58,8 @@
             splToken,
             reference,
             memo,
-            cluster: $cluster
+            cluster: $cluster,
+            programId: programSelected
         };
         [ QR, QR_str, url ] = await createTxRequestQr(txFields, 200)
         // [ QR, QR_str, url ] = await createTransferRequestQr(transferFields, 200)
@@ -61,6 +72,7 @@
     <h1>Transfer Tokens with SolanaPay QR</h1>
     <div class="grid grid-cols-1 space-y-4">
 		<!-- User Input -->
+        <Select label='Program' options={programs} bind:bindValue={programSelected} onChange={updateProgram} />
 		<div>
 			<label for="Product">Label</label>
 			<input class="text-black w-full" bind:value={label} placeholder="Specify product">

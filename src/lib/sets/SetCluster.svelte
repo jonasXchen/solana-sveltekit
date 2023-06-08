@@ -2,6 +2,8 @@
     import { cluster, connectedCluster } from "$lib/stores";
 	import { type Cluster, Connection, clusterApiUrl } from "@solana/web3.js";
 
+	import Select from "../components/Select.svelte";
+
 
 	// Define list for cluster options
 	let cluster_options = [
@@ -10,6 +12,7 @@
 		{ name: 'mainnet-beta'},
 		{ name: 'localnet'}
 	]
+	let clusters = [ 'devnet', 'testnet', 'mainnet-beta', 'localnet']
 
 	// Input/Output variables used
 	let cluster_selected : Cluster | 'localnet' = 'devnet'

@@ -1,10 +1,11 @@
 <script lang=ts>
 
-    import GetParsedAccountData from '$lib/sets/GetParsedAccountData.svelte';
-    import SetCluster from '$lib/sets/SetCluster.svelte';
+	import GetParsedAccountData from '$lib/sets/GetParsedAccountData.svelte';
+	import SetCluster from '$lib/sets/SetCluster.svelte';
 	import TransferSol from '$lib/sets/TransferSol.svelte';
 	import SplToken from '$lib/sets/SplToken.svelte';
 	import SplToken2022 from '$lib/sets/SplToken2022.svelte';
+  	import Select from '$lib/components/Select.svelte';
 
 
 </script>

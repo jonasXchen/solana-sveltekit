@@ -86,7 +86,7 @@
 
 
     // Mint to Token Account
-    async function mintTokenToAccount(wallet : any, connection: Connection, mint : PublicKey | string, ata: PublicKey | string, tokenAmount: number) {
+    async function mintTokenToAccount(wallet : WalletStore, connection: Connection, mint : PublicKey | string, ata: PublicKey | string, tokenAmount: number) {
 
         // Create tx to mint token and sign with wallet and send Transaction
         let tx = await createMintTokenTx(connection, mint, ata, wallet.publicKey!, tokenAmount, programId)
@@ -95,10 +95,10 @@
 
 
         // Transfer Token
-    async function transferToken(wallet : any, connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, tokenAmount: number) {
+    async function transferToken(wallet : WalletStore, connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, tokenAmount: number) {
 
         // Create tx to transfer token and sign with wallet and send Transaction
-        let tx = await createTokenTransferTx(connection, wallet, mint, recipient, tokenAmount, undefined, programId)
+        let tx = await createTokenTransferTx(connection, wallet.publicKey!, mint, recipient, tokenAmount, wallet.publicKey!, undefined, programId)
         transferTokenSignature = await signAndSendTx(connection, wallet, tx)
 
     }
