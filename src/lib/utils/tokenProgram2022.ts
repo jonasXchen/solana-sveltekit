@@ -32,8 +32,6 @@ import {
     createTransferCheckedInstruction
 } from "@solana/spl-token"
 
-import type { WalletStore } from '@svelte-on-solana/wallet-adapter-core';
-
        
 enum AccountType {
     Mint,
@@ -173,6 +171,7 @@ export async function createMint2Tx(connection: Connection, signerPubkey: Public
 
 }
 
+
 export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
 
     
@@ -187,6 +186,7 @@ export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | 
 
     return tx
 }
+
 
 export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
     if (typeof mint == 'string') {
@@ -213,6 +213,7 @@ export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string,
 
     return ata
 }
+
 
 export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | string, payer: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
 
@@ -245,6 +246,7 @@ export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | st
     return tx
 }
 
+
 export async function checkAtaExist(connection: Connection, ata: PublicKey, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
     
     try {
@@ -257,6 +259,7 @@ export async function checkAtaExist(connection: Connection, ata: PublicKey, comm
         return false
     }
 }
+
 
 
 export async function createMintTokenTx(connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, mintAuthority: PublicKey, amount: number, programId: PublicKey = TOKEN_2022_PROGRAM_ID){
@@ -306,6 +309,7 @@ export async function createMintTokenTx(connection: Connection, mint: PublicKey 
     return tx
 
 }
+
 
 export async function createSplTransferTx(connection: Connection, mint: PublicKey | string, sender: PublicKey, amount: number, recipient: PublicKey | string, payer: PublicKey = sender, references? : PublicKey[], commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
 
@@ -388,21 +392,11 @@ export async function createSplTransferTx(connection: Connection, mint: PublicKe
             undefined,
             programId
         )
-
-        // add references to the instruction
-        if (!(references === undefined)) {
-            for (const pubkey of references) {
-                transferCheckedIx.keys.push({ pubkey, isWritable: false, isSigner: false });
-            }
-        }
         
         tx.add(
             transferCheckedIx
         )
     }
-
-
-    
 
     return tx
 
