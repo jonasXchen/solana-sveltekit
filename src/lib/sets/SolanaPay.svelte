@@ -19,9 +19,9 @@
     let amount : Amount = BigNumber(1)
     let splToken : PublicKey = new PublicKey(PUBLIC_USDC_DEV_MINT as String);
     let reference : References = Keypair.generate().publicKey
-    let label : string = "Product A"
+    let label : string = "Chicken Rice"
     let message : string = "Thank you very much!"
-    let memo : string = "test memo"
+    let memo : string = "ID912012999"
     let programSelected : PublicKey 
 
     // Define object for function to create QR Code
