@@ -107,7 +107,7 @@
 				<p>waiting</p>
 			{:then account}
 				{#if account !== undefined}
-				<pre>{JSON.stringify(account, null, 4)}</pre>
+				<pre class="break-words">{JSON.stringify(account, null, 2)}</pre>
 				{/if}
 			{:catch error}
 				<p>No data</p>

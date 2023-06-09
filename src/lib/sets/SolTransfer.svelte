@@ -68,7 +68,7 @@
 		<!-- Airdrop success message -->
 		{#await airDropSignature then value}
 			{#if value}
-			<p>SUCCESS -> Airdop Signature: 
+			<p class="break-words">SUCCESS -> Airdop Signature: 
 				<a class="hover:text-primary" href='https://solana.fm/tx/{value}?cluster={$cluster}' target="_blank" rel="noopener noreferrer">{value}</a>
 			</p>
 			{/if}
@@ -77,7 +77,7 @@
 		<!-- Transfer success message -->
 		{#await transferSignature then value}
 			{#if value}
-			<p>SUCCESS -> Transfer Signature: 
+			<p class="break-words">SUCCESS -> Transfer Signature: 
 				<a class="hover:text-primary" href='https://solana.fm/tx/{value}?cluster={$cluster}' target="_blank" rel="noopener noreferrer">{value}</a>
 			</p>
 			{/if}

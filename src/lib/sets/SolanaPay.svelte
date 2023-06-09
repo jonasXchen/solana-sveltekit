@@ -98,7 +98,7 @@
             <!-- QR Code Output with URI -->
             {#if (QR)}
                 {@html `${QR_str}`} 
-                {url}
+                <div class="break-words">{url}</div>
             {/if}
 
 
