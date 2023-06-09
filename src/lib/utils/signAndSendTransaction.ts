@@ -16,6 +16,7 @@ export default async function signAndSendTx(connection: Connection, wallet: Wall
         tx.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight
     }
 
+    console.log(JSON.stringify(tx))
     const sig = await wallet.sendTransaction(tx, connection)
 
     return sig

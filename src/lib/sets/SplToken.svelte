@@ -72,10 +72,11 @@
     async function getOrcreateTokenAccount(wallet : WalletStore, connection : Connection, mint: PublicKey | string, tokenOwner : PublicKey | string) {
 
         // Get ata
-        ata = getAta(mint, tokenOwner)
+        ata = getAta(mint, tokenOwner, programId)
 
         // Check if ata exists
         let ataExist = await checkAtaExist(connection, ata, undefined, programId)
+
         if (ataExist == false) {
             // Create tx to create token account and sign with wallet and send Transaction
             let tx = createAtaTx(mint, tokenOwner, wallet.publicKey!, programId)
