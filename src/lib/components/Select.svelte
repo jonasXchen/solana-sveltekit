@@ -1,7 +1,7 @@
 <script lang="ts">
-    export let options : string[] = []
+    export let options : any[] = []
     export let styling : string = ''
-    export let bindValue : string
+    export let bindValue : any
     export let label : string
     export let onChange: () => Promise<any> | any = () => undefined;
     

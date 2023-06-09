@@ -30,7 +30,7 @@
 	// Input/Output variables used
 	let airDropSignature: string;
 	let transferSignature: string;
-	let source : PublicKey | any;
+	let source : PublicKey | any
 	let recipient : PublicKey | any; 
 	let solAmount : number | string = 2.0;
 
@@ -40,18 +40,14 @@
 </script>
 
 <!-- HTML + SVELTE -->
-<section class="bg-dark p-4 space-y-4 w-1/2 rounded-md text-black dark:text-white">
-	<h1>Transfer / Airdrop SOL</h1>
+<section class="bg-dark p-4 space-y-4 w-2/3 rounded-md text-black dark:text-white">
+	<h1>Transfer/Airdrop SOL</h1>
 	<!-- Transfer & Airdrop Token -->
 	<div class="grid grid-cols-1 space-y-4">
 
 		<!-- User Input -->
 		<div>
-			<label for="Source">Source:</label>
-			<input class="text-black w-full" bind:value={source} placeholder="Connect to your wallet ...">
-		</div>
-		<div>
-			<label for="Target">Target:</label>
+			<label for="Target">Recipient:</label>
 			<input class="text-black w-full" bind:value={recipient} placeholder="Enter recipient address ...">
 		</div>
 		<div>
@@ -61,7 +57,7 @@
 
 		<!-- User Buttons -->
 		<div>
-			<Button label='Send Transaction' onClick={() => transferSol($walletStore, $connectedCluster, new PublicKey(source), new PublicKey(recipient), +solAmount)}/>
+			<Button label='Transfer' onClick={() => transferSol($walletStore, $connectedCluster, new PublicKey(source), new PublicKey(recipient), +solAmount)}/>
 			<Button label='Airdrop' onClick={() => airDrop($connectedCluster, new PublicKey(recipient), +solAmount)}/>
 			<Button label='Copy Wallet' styling='bg-blue-600' onClick={() => recipient = $walletStore.publicKey|| ''}/>
 		</div>

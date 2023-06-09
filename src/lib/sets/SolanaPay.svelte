@@ -8,15 +8,12 @@
     import { createTxRequestQr } from '../utils/createSolanaPayQR';
 
     import Button from '../components/Button.svelte';
-    import Select from '../components/Select.svelte';
+    import SetTokenProgram from './SetTokenProgram.svelte';
     import { cluster } from '$lib/stores'
 
-    
     import { PUBLIC_SOLANAPAY_ENDPOINT, PUBLIC_USDC_DEV_MINT, PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
-    import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from '@solana/spl-token';
-
-    let programs = [ TOKEN_PROGRAM_ID.toString(), TOKEN_2022_PROGRAM_ID.toString()]
-    
+  
+    // Define inputs and set default values for Solana Pay
     let link : URL = new URL(PUBLIC_SOLANAPAY_ENDPOINT)
     let recipient : PublicKey | string = new PublicKey(PUBLIC_MERCHANT_PUBKEY as String);
     let amount : Amount = BigNumber(1)
@@ -25,13 +22,9 @@
     let label : string = "Product A"
     let message : string = "Thank you very much!"
     let memo : string = "test memo"
+    let programSelected : PublicKey 
 
-    let programSelected : string = programs[0]
-    function updateProgram(){
-        programSelected = programSelected
-    }
-
-
+    // Define object for function to create QR Code
     let txFields : any = {
         link,
         label,
@@ -42,9 +35,10 @@
         reference,
         memo,
         cluster: $cluster,
-        programId: programSelected
+        programId: programSelected!
     }
 
+    // Create SolanaPay QR
     let QR: string | URL | QRCodeStyling
     let QR_str: string | URL | QRCodeStyling
     let url: string | URL | QRCodeStyling
@@ -59,7 +53,7 @@
             reference,
             memo,
             cluster: $cluster,
-            programId: programSelected
+            programId: programSelected!
         };
         [ QR, QR_str, url ] = await createTxRequestQr(txFields, 200)
         // [ QR, QR_str, url ] = await createTransferRequestQr(transferFields, 200)
@@ -68,11 +62,12 @@
 
 </script>
 
-<section class="bg-dark p-4 space-y-4 w-1/2 rounded-md text-black dark:text-white">
-    <h1>Transfer Tokens with SolanaPay QR</h1>
+<section class="bg-dark p-4 space-y-4 w-2/3 rounded-md text-black dark:text-white">
+
+    <h1>Transfer with SolanaPay QR</h1>
     <div class="grid grid-cols-1 space-y-4">
 		<!-- User Input -->
-        <Select label='Program' options={programs} bind:bindValue={programSelected} onChange={updateProgram} />
+        <SetTokenProgram bind:programSelected={programSelected} />
 		<div>
 			<label for="Product">Label</label>
 			<input class="text-black w-full" bind:value={label} placeholder="Specify product">
@@ -93,14 +88,20 @@
 			<label for="Recipient">Message</label>
 			<input class="text-black w-full" bind:value={message} placeholder="Specify recipient">
 		</div>
+
         <div>
+
             <Button label='Create QR' onClick={() => displayQR()}/>
             <Button label='Copy Wallet' styling='bg-blue-600' onClick={() => recipient = $walletStore.publicKey || ''}/>
             <div class="mt-2">
+            
+            <!-- QR Code Output with URI -->
             {#if (QR)}
                 {@html `${QR_str}`} 
                 {url}
             {/if}
+
+
             </div>
         </div>
 

@@ -57,8 +57,8 @@
 
 
 <!-- HTML + SVELTE -->
-<section class="bg-dark p-4 space-y-4 w-1/2 rounded-md text-black dark:text-white">
-	<h1>Check / Subscribe to Accounts</h1>
+<section class="bg-dark p-4 space-y-4 w-2/3 rounded-md text-black dark:text-white">
+	<h1>Get/Subscribe to Account</h1>
 	<div>
 		<!-- User Input -->
 		<div>
