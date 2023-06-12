@@ -2,8 +2,6 @@
     import { cluster, connectedCluster } from "$lib/stores";
 	import { type Cluster, Connection, clusterApiUrl } from "@solana/web3.js";
 
-	import Select from "../components/Select.svelte";
-
 
 	// Define list for cluster options
 	let cluster_options = [
