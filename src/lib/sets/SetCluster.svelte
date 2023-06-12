@@ -11,14 +11,14 @@
     // Set cluster connection via store
 	function handleSubmit() {
 
-		// Set new cluster in 
+		// Set new cluster in store
 		cluster.set(clusterSelected as Cluster)
 
 		// Handle localnet
 		if (clusterSelected == 'localnet') { clusterUrl = 'http://127.0.0.1:8899'} 
 		else { clusterUrl = clusterApiUrl(clusterSelected as Cluster)}
+		
 		// Set connection in store
-
 		connectedCluster.set(new Connection(clusterUrl))
 	}
 </script>
