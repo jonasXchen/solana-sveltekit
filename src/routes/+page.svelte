@@ -18,16 +18,16 @@
 		<div class="flex m-4 mb-12 justify-center">
 			<SetCluster />
 		</div>
-    <div class="flex m-4 mb-12 justify-center">
+		<div class="flex m-4 mb-12 justify-center">
 			<GetAccount />
 		</div>
 		<div class="flex m-4 mb-12 justify-center">
 			<SolTransfer />
 		</div>
-    <div class="flex m-4 mb-12 justify-center">
-      <SplToken />
-    </div>
-    <div class="flex m-4 mb-12 justify-center">
+		<div class="flex m-4 mb-12 justify-center">
+			<SplToken />
+		</div>
+		<div class="flex m-4 mb-12 justify-center">
 			<SolanaPay />
 		</div>
 	</div>
