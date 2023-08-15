@@ -36,9 +36,9 @@ export async function POST( event : any ) {
   let clusterParam = urlParams.get('cluster') || undefined;
   let connection : Connection
   if (clusterParam === 'mainnet-beta') {
-    connection = new Connection(PRIVATE_SOL_RPC)
+    connection = new Connection(PRIVATE_SOL_RPC, 'confirmed')
   } else if (clusterParam === ('devnet'|| 'testnet')) {
-    connection = new Connection(clusterApiUrl(clusterParam))
+    connection = new Connection(clusterApiUrl(clusterParam), 'confirmed')
   } else throw new Error('invalid cluster');
   console.log(connection)
   
