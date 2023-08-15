@@ -115,10 +115,6 @@ export async function POST( event : any ) {
   )
   tx.add(...transferIxArray)
 
-  console.log("tx: ", tx)
-  console.log("ix: ", transferIxArray)
-  console.log("ix String: ", transferIxArray.toString())
-
   // Partially sign to take on fees
   let signer = Keypair.fromSecretKey( MERCHANT_PRIVATE_KEY )
   tx.partialSign( signer );
