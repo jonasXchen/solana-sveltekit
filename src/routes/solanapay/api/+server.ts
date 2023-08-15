@@ -2,7 +2,7 @@
 import { Connection, Keypair, PublicKey, Transaction, clusterApiUrl, TransactionInstruction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
-import { createSplTransferTx, getAta } from '$lib/utils/tokenProgram2022'
+import { createSplTransferTx } from '$lib/utils/tokenProgram2022'
 
 import { json } from '@sveltejs/kit';
 import { PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
@@ -34,6 +34,7 @@ export async function POST( event : any ) {
 
   // Get and make checks on parameters
   let clusterParam = urlParams.get('cluster');
+  console.log(clusterParam)
   if (!(clusterParam === ('devnet' || 'mainnet-beta' || 'testnet'))) throw new Error('invalid cluster');
   let cluster = clusterParam || undefined;
   let connection = new Connection(clusterApiUrl(cluster))
@@ -88,7 +89,6 @@ export async function POST( event : any ) {
   // Create Transfer Instruction based on provided token, if not then SOL Transfer
   let transferIxArray: TransactionInstruction[] = []
   if (!(splToken === undefined)) {
-    recipient = getAta(splToken, recipient, splTokenParam)
     transferIxArray = (await createSplTransferTx(connection, splToken, account, amount, recipient, MERCHANT_PUBKEY, [reference], undefined, programId)).instructions
   } else {
     transferIxArray = [ 
