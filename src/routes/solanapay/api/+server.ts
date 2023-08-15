@@ -6,7 +6,7 @@ import { createSplTransferTx } from '$lib/utils/tokenProgram2022'
 
 import { json } from '@sveltejs/kit';
 import { PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
-import { PRIVATE_MERCHANT_PRIVATE_KEY } from '$env/static/private'
+import { PRIVATE_MERCHANT_PRIVATE_KEY, PRIVATE_SOL_RPC } from '$env/static/private'
 
 const MERCHANT_PUBKEY = new PublicKey(PUBLIC_MERCHANT_PUBKEY);
 const MERCHANT_PRIVATE_KEY = new Uint8Array(JSON.parse(PRIVATE_MERCHANT_PRIVATE_KEY))
@@ -33,12 +33,13 @@ export async function POST( event : any ) {
   let urlParams = event.url.searchParams
 
   // Get and make checks on parameters
-  let clusterParam = urlParams.get('cluster');
-  console.log(clusterParam)
-  if (!(clusterParam === ('devnet' || 'mainnet-beta' || 'testnet'))) throw new Error('invalid cluster');
-  let cluster = clusterParam || undefined;
-  console.log(cluster)
-  let connection = new Connection(clusterApiUrl(cluster))
+  let clusterParam = urlParams.get('cluster') || undefined;
+  let connection : Connection
+  if (clusterParam === 'mainnet-beta') {
+    connection = new Connection(PRIVATE_SOL_RPC)
+  } else if (clusterParam === ('devnet'|| 'testnet')) {
+    connection = new Connection(clusterApiUrl(clusterParam))
+  } else throw new Error('invalid cluster');
   console.log(connection)
   
   let splTokenParam = urlParams.get('splToken');
