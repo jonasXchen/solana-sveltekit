@@ -328,7 +328,9 @@ export let createSplTransferTx = async (connection: Connection, mint: PublicKey 
 
     // Get recipient ATA
     let tokenRecipient = getAta(mint, recipient, programId)
+    console.log("recipient: ", tokenRecipient)
     let recipientAtaExist = await checkAtaExist(connection, tokenRecipient, commitment, programId)
+    console.log("recipientAtaExist: ", recipientAtaExist)
     if (!recipientAtaExist) {
         tx.add(
             createAssociatedTokenAccountInstruction(

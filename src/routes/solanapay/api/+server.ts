@@ -40,7 +40,6 @@ export async function POST( event : any ) {
   } else if (clusterParam === ('devnet'|| 'testnet')) {
     connection = new Connection(clusterApiUrl(clusterParam), 'confirmed')
   } else throw new Error('invalid cluster');
-  console.log(connection)
   
   let splTokenParam = urlParams.get('splToken');
   let splToken : PublicKey | undefined
