@@ -2,7 +2,7 @@ import { encodeURL, createQR, type TransferRequestURLFields } from '@solana/pay'
 import type QRCodeStyling from '@solana/qr-code-styling';
 
 
-export async function createTransferRequestQr( urlFields: TransferRequestURLFields, size: number | undefined = undefined, background: string | undefined = undefined, color: string | undefined = undefined) {
+export let createTransferRequestQr = async ( urlFields: TransferRequestURLFields, size: number | undefined = undefined, background: string | undefined = undefined, color: string | undefined = undefined) => {
 
     let QR : QRCodeStyling
     let QR_str: string
@@ -16,7 +16,7 @@ export async function createTransferRequestQr( urlFields: TransferRequestURLFiel
 }
 
 
-export async function createTxRequestQr( urlFields : any,  size: number | undefined = undefined, background: string | undefined = undefined, color: string | undefined = undefined) {
+export let createTxRequestQr = async ( urlFields : any,  size: number | undefined = undefined, background: string | undefined = undefined, color: string | undefined = undefined) => {
 
     let QR : QRCodeStyling
     let QR_str: string

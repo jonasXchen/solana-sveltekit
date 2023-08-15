@@ -38,7 +38,7 @@ enum AccountType {
     Token
 }
 
-export function getSpace(accountType: AccountType, extensions: ExtensionType[]) : number {
+export let getSpace = (accountType: AccountType, extensions: ExtensionType[]) : number => {
     if (accountType === AccountType.Mint) {
         let mintLen = getMintLen(extensions)
         return mintLen
@@ -75,7 +75,7 @@ export class MintConfigData {
     }
 }
 
-export async function createMint2Tx(connection: Connection, signerPubkey: PublicKey, configData: MintConfigData, mintKeypair?: Signer, programId: PublicKey = TOKEN_2022_PROGRAM_ID) : Promise<Transaction> {
+export let createMint2Tx = async (connection: Connection, signerPubkey: PublicKey, configData: MintConfigData, mintKeypair?: Signer, programId: PublicKey = TOKEN_2022_PROGRAM_ID) : Promise<Transaction> => {
 
 
     // Set extensions
@@ -172,7 +172,7 @@ export async function createMint2Tx(connection: Connection, signerPubkey: Public
 }
 
 
-export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
+export let createCloseMintTx = async (authority: PublicKey, mint: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
 
     
     if (typeof mint == 'string') {
@@ -188,7 +188,7 @@ export async function createCloseMintTx(authority: PublicKey, mint: PublicKey | 
 }
 
 
-export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
+export let getAta = (mint: PublicKey | string, tokenOwner: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
     }
@@ -215,7 +215,7 @@ export function getAta(mint: PublicKey | string, tokenOwner: PublicKey | string,
 }
 
 
-export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | string, payer: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
+export let createAtaTx = (mint: PublicKey | string, tokenOwner: PublicKey | string, payer: PublicKey | string, programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
@@ -247,7 +247,7 @@ export function createAtaTx(mint: PublicKey | string, tokenOwner: PublicKey | st
 }
 
 
-export async function checkAtaExist(connection: Connection, ata: PublicKey, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID) {
+export let checkAtaExist = async (connection: Connection, ata: PublicKey, commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
     
     try {
         await getAccount(connection, ata, commitment, programId);
@@ -262,7 +262,7 @@ export async function checkAtaExist(connection: Connection, ata: PublicKey, comm
 
 
 
-export async function createMintTokenTx(connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, mintAuthority: PublicKey, amount: number, programId: PublicKey = TOKEN_2022_PROGRAM_ID){
+export let createMintTokenTx = async (connection: Connection, mint: PublicKey | string, recipient: PublicKey | string, mintAuthority: PublicKey, amount: number, programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)
@@ -311,7 +311,7 @@ export async function createMintTokenTx(connection: Connection, mint: PublicKey 
 }
 
 
-export async function createSplTransferTx(connection: Connection, mint: PublicKey | string, sender: PublicKey, amount: number, recipient: PublicKey | string, payer: PublicKey = sender, references? : PublicKey[], commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID){
+export let createSplTransferTx = async (connection: Connection, mint: PublicKey | string, sender: PublicKey, amount: number, recipient: PublicKey | string, payer: PublicKey = sender, references? : PublicKey[], commitment: Commitment = 'confirmed', programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
 
     if (typeof mint == 'string') {
         mint = new PublicKey(mint)

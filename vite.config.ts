@@ -13,11 +13,11 @@ export default defineConfig({
 	// For including Buffer
 	resolve: {
 		alias: {
-		  buffer: 'buffer/',
+		  buffer: 'buffer/'
 		}
 	},
 	server: {
 		port: 3000
-	},	
+	}
 
 });

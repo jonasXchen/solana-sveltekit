@@ -1,122 +1,148 @@
 <script lang="ts">
-	import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
-	import WalletButton from './WalletButton.svelte';
-	import WalletConnectButton from './WalletConnectButton.svelte';
-	import WalletModal from './WalletModal.svelte';
-	import './styles.css';
+  import { walletStore } from "@svelte-on-solana/wallet-adapter-core";
+  import WalletButton from "./WalletButton.svelte";
+  import WalletConnectButton from "./WalletConnectButton.svelte";
+  import WalletModal from "./WalletModal.svelte";
+  import { signIn, signOut } from "./signing";
+  import "./styles.css";
 
-	$: ({ publicKey, wallet, disconnect, connect, select } = $walletStore);
+  $: ({ publicKey, wallet, disconnect, connect, select } = $walletStore);
 
-	let dropDrownVisible = false,
-		modalVisible = false,
-		copied = false;
+  let dropDrownVisible = false,
+    modalVisible = false,
+    copied = false;
 
-	$: base58 = publicKey && publicKey?.toBase58();
-	$: content = showAddressContent($walletStore);
+  $: base58 = publicKey && publicKey?.toBase58();
+  $: content = showAddressContent($walletStore);
 
-	const copyAddress = async () => {
-		if (!base58) return;
-		await navigator.clipboard.writeText(base58);
-		copied = true;
-		setTimeout(() => (copied = false), 400);
-	};
+  const copyAddress = async () => {
+    if (!base58) return;
+    await navigator.clipboard.writeText(base58);
+    copied = true;
+    setTimeout(() => (copied = false), 400);
+  };
 
-	const openDropdown = () => (dropDrownVisible = true);
-	const closeDropdown = () => (dropDrownVisible = false);
-	const openModal = () => {
-		modalVisible = true;
-		closeDropdown();
-	};
-	const closeModal = () => (modalVisible = false);
+  const openDropdown = () => (dropDrownVisible = true);
+  const closeDropdown = () => (dropDrownVisible = false);
+  const openModal = () => {
+    modalVisible = true;
+    closeDropdown();
+  };
+  const closeModal = () => (modalVisible = false);
 
-	function showAddressContent(store) {
-		const base58 = store.publicKey?.toBase58();
-		if (!store.wallet || !base58) return null;
-		return base58.slice(0, 4) + '..' + base58.slice(-4);
-	}
+  const handleSignOut = async () => {
+    await signOut();
+    disconnect();
+  };
 
-	async function connectWallet(event: any) {
-		closeModal();
-		await select(event.detail);
-		await connect();
-	}
+  const handleSignIn = async () => {
+    await signIn($walletStore);
+  };
 
-	interface CallbackType {
-		(arg?: string): void;
-	}
+  const showAddressContent = (store: any) => {
+    const base58 = store.publicKey?.toBase58();
+    if (!store.wallet || !base58) return null;
+    return base58.slice(0, 4) + ".." + base58.slice(-4);
+  };
 
-	function clickOutside(node: HTMLElement, callbackFunction: CallbackType): unknown {
-		function onClick(event: MouseEvent) {
-			if (
-				node &&
-				event.target instanceof Node &&
-				!node.contains(event.target) &&
-				!event.defaultPrevented
-			) {
-				callbackFunction();
-			}
-		}
+  const connectWallet = async (event: any) => {
+    closeModal();
+    await select(event.detail);
+    await connect();
+  };
 
-		document.body.addEventListener('click', onClick, true);
+  interface CallbackType {
+    (arg?: string): void;
+  }
 
-		return {
-			update(newCallbackFunction: CallbackType) {
-				callbackFunction = newCallbackFunction;
-			},
-			destroy() {
-				document.body.removeEventListener('click', onClick, true);
-			}
-		};
-	}
+  const clickOutside = (node: HTMLElement, callbackFunction: CallbackType) => {
+    function onClick(event: MouseEvent) {
+      if (
+        node &&
+        event.target instanceof Node &&
+        !node.contains(event.target) &&
+        !event.defaultPrevented
+      ) {
+        callbackFunction();
+      }
+    }
+
+    document.body.addEventListener("click", onClick, true);
+
+    return {
+      update(newCallbackFunction: CallbackType) {
+        callbackFunction = newCallbackFunction;
+      },
+      destroy() {
+        document.body.removeEventListener("click", onClick, true);
+      },
+    };
+  };
 </script>
 
 {#if !wallet}
-	<WalletButton class="wallet-adapter-button-trigger" on:click={openModal}>
-		<slot>Select Wallet</slot>
-	</WalletButton>
+  <WalletButton class="wallet-adapter-button-trigger" on:click={openModal}>
+    <slot>Select Wallet</slot>
+  </WalletButton>
 {:else if !base58}
-	<WalletConnectButton />
+  <WalletConnectButton />
 {:else}
-	<div class="wallet-adapter-dropdown">
-		<WalletButton on:click={openDropdown} class="wallet-adapter-button-trigger">
-			<svelte:fragment slot="start-icon">
-				<img src={wallet.icon} alt={`${wallet.name} icon`} />
-			</svelte:fragment>
-			{content}
-		</WalletButton>
-		{#if dropDrownVisible}
-			<ul
-				aria-label="dropdown-list"
-				class="wallet-adapter-dropdown-list wallet-adapter-dropdown-list-active"
-				role="menu"
-				use:clickOutside={() => {
-					console.log(`clickOutsiede`, dropDrownVisible);
-					if (dropDrownVisible) {
-						closeDropdown();
-					}
-				}}
-			>
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li
-					on:click={copyAddress}
-					class="wallet-adapter-dropdown-list-item"
-					role="menuitem"
-				>
-					{copied ? 'Copied' : 'Copy address'}
-				</li>
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li on:click={openModal} class="wallet-adapter-dropdown-list-item" role="menuitem">
-					Connect a different wallet
-				</li>
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<li on:click={disconnect} class="wallet-adapter-dropdown-list-item" role="menuitem">
-					Disconnect
-				</li>
-			</ul>
-		{/if}
-	</div>
+  <div class="wallet-adapter-dropdown">
+    <WalletButton on:click={openDropdown} class="wallet-adapter-button-trigger">
+      <svelte:fragment slot="start-icon">
+        <img src={wallet.icon} alt={`${wallet.name} icon`} />
+      </svelte:fragment>
+      {content}
+    </WalletButton>
+    {#if dropDrownVisible}
+      <ul
+        aria-label="dropdown-list"
+        class="wallet-adapter-dropdown-list wallet-adapter-dropdown-list-active"
+        role="menu"
+        use:clickOutside={() => {
+          console.log(`clickOutsiede`, dropDrownVisible);
+          if (dropDrownVisible) {
+            closeDropdown();
+          }
+        }}
+      >
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <li
+          on:click={copyAddress}
+          class="wallet-adapter-dropdown-list-item"
+          role="menuitem"
+        >
+          {copied ? "Copied" : "Copy address"}
+        </li>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <li
+          on:click={handleSignIn}
+          class="wallet-adapter-dropdown-list-item"
+          role="menuitem"
+        >
+          Sign In
+        </li>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <li
+          on:click={openModal}
+          class="wallet-adapter-dropdown-list-item"
+          role="menuitem"
+        >
+          Connect a different wallet
+        </li>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <li
+          on:click={handleSignOut}
+          class="wallet-adapter-dropdown-list-item"
+          role="menuitem"
+        >
+          Disconnect
+        </li>
+      </ul>
+    {/if}
+  </div>
 {/if}
 
 {#if modalVisible}
-	<WalletModal on:close={closeModal} on:connect={connectWallet} />
+  <WalletModal on:close={closeModal} on:connect={connectWallet} />
 {/if}

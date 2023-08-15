@@ -14,7 +14,7 @@ import {
 
 
 // Airdrop
-export async function getAirdrop(connection: Connection, recipient: PublicKey, solAmount: number) : Promise<TransactionSignature> {
+export let getAirdrop = async (connection: Connection, recipient: PublicKey, solAmount: number) : Promise<TransactionSignature> => {
 
     // Request Airdrop
     let airDropSignature = await connection.requestAirdrop(
@@ -26,7 +26,7 @@ export async function getAirdrop(connection: Connection, recipient: PublicKey, s
 
 
 // Sol Transfer Tx
-export function createSolTransferTx(connection: Connection, source: PublicKey, recipient : PublicKey, solAmount : number) : Transaction {
+export let createSolTransferTx = (connection: Connection, source: PublicKey, recipient : PublicKey, solAmount : number) : Transaction => {
 
 
     // Create Transaction with instruction
@@ -44,7 +44,7 @@ export function createSolTransferTx(connection: Connection, source: PublicKey, r
 
 
 // Get AccountInfo function
-export async function getAccountInfo(connection: Connection, pubKey : PublicKey) {
+export let getAccountInfo = async (connection: Connection, pubKey : PublicKey) => {
     
     // Get AccountInfo
     let accountInfo = await connection.getAccountInfo(pubKey, connection.commitment);
@@ -53,7 +53,7 @@ export async function getAccountInfo(connection: Connection, pubKey : PublicKey)
 
 
 // Get ParsedAccountData function
-export async function getParsedAccountInfo(connection: Connection, pubKey : PublicKey) {
+export let getParsedAccountInfo = async (connection: Connection, pubKey : PublicKey) => {
     
     // Get parsed AccountInfo
     let parsedAccountInfo = await connection.getParsedAccountInfo(pubKey, connection.commitment);
@@ -63,7 +63,7 @@ export async function getParsedAccountInfo(connection: Connection, pubKey : Publ
 
 
 // Subscribe AccountData function
-export function subscribeAccountInfo(connection: Connection, pubKey : PublicKey) {
+export let subscribeAccountInfo = (connection: Connection, pubKey : PublicKey) => {
     
     // Subscribe accountInfo
     let subscribedAccountChange = connection.onAccountChange(
