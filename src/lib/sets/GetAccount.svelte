@@ -24,6 +24,7 @@
     | RpcResponseAndContext<AccountInfo<Buffer | ParsedAccountData> | null>
     | AccountInfo<Buffer>
     | null;
+  $: accountData;
   let subscribedAccountInfoChange: number;
 
   // Get AccountInfo function
