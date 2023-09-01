@@ -39,7 +39,7 @@ export let sendSoulboundNftIx = (connection: Connection, mintAddress: PublicKey,
         }
     ).getInstructions()
 
-    let ixArray = [...approveFreezeAuthorityIx, ...sendNftIx, ...freezeNftIx]
+    let ixArray = [ ...sendNftIx]
 
     return ixArray
 

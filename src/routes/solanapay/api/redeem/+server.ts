@@ -122,7 +122,7 @@ export async function POST( event : any ) {
       requireAllSignatures: false,
   });
   const base64Transaction = serializedTransaction.toString('base64');
-  
+
   return json(
     { 
       transaction: base64Transaction,
