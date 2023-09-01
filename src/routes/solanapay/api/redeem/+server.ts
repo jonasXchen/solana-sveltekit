@@ -98,6 +98,7 @@ export async function POST( event : any ) {
     recipient,
     signer
   )
+  console.log(transferIxArray)
 
   // Get latest blockchash and block height
   let latestBlockHash = await connection.getLatestBlockhash();
@@ -112,6 +113,7 @@ export async function POST( event : any ) {
   )
   tx.add(...transferIxArray)
 
+  
   // Partially sign to take on fees
   tx.partialSign( signer );
 
