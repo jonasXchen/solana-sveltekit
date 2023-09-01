@@ -108,7 +108,7 @@ export async function POST( event : any ) {
     {
       blockhash: latestBlockHash.blockhash,
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-      feePayer: sender,
+      feePayer: MERCHANT_PUBKEY,
     }
   )
   tx.add(...transferIxArray)

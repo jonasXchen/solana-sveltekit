@@ -3,7 +3,8 @@ import {
     Metaplex, 
     freezeDelegatedNftBuilder,
     approveTokenDelegateAuthorityBuilder,
-    transferNftBuilder
+    transferNftBuilder,
+    transferNftOperation
 } from "@metaplex-foundation/js"
 import { createFreezeDelegatedAccountInstruction, createTransferInstruction } from "@metaplex-foundation/mpl-token-metadata"
 
@@ -20,8 +21,6 @@ export let sendSoulboundNftIx = (connection: Connection, mintAddress: PublicKey,
         }
     ).getInstructions()
 
-    createFreezeDelegatedAccountInstruction
-    createTransferInstruction
 
     let sendNftIx = transferNftBuilder(metaplex,
         {
