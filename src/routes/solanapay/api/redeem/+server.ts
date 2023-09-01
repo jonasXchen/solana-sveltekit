@@ -98,7 +98,7 @@ export async function POST( event : any ) {
     recipient,
     signer
   )
-  console.log(transferIxArray)
+  console.log(transferIxArray.keys.toString())
 
   // Get latest blockchash and block height
   let latestBlockHash = await connection.getLatestBlockhash();
@@ -108,7 +108,7 @@ export async function POST( event : any ) {
     {
       blockhash: latestBlockHash.blockhash,
       lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-      feePayer: MERCHANT_PUBKEY,
+      feePayer: sender,
     }
   )
   tx.add(...transferIxArray)
