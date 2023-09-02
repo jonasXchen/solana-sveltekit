@@ -92,7 +92,7 @@ export async function POST( event : any ) {
   let account = new PublicKey(accountField);
   
   connection = new Connection(clusterApiUrl("mainnet-beta"), 'confirmed')
-  let filePath = "src/lib/assets/collections/3XnRrwPUDZ7bSGs8MJDzUzXZ1MnuKze1M6T7RvjAmrp5.json"
+  let filePath = "static/collections/3XnRrwPUDZ7bSGs8MJDzUzXZ1MnuKze1M6T7RvjAmrp5.json"
   let mintKey = "mints"
   let signerKey = "signers"
   let mintAddress = getFirstValueInArray(filePath, mintKey, signerKey, account.toString())!
