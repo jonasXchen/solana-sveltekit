@@ -18,7 +18,7 @@
   } from "$env/static/public";
 
   // Define inputs and set default values for Solana Pay
-  let link: URL = new URL(PUBLIC_ENDPOINT_HOST + "/solanapay/api/redeem");
+  let link: URL = new URL(PUBLIC_ENDPOINT_HOST + "/solanapay/api");
   let recipient: PublicKey | string = new PublicKey(
     PUBLIC_MERCHANT_PUBKEY as String
   );

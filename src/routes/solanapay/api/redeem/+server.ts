@@ -6,9 +6,8 @@ import { sendSoulboundNftIx } from './sendSoulboundNftIx';
 import { json } from '@sveltejs/kit';
 import { PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
 import { PRIVATE_MERCHANT_PRIVATE_KEY, PRIVATE_SOL_RPC } from '$env/static/private'
-import { getFirstValueInArray } from './jsonVerifications';
 import { createSplTransferTx } from '$lib/utils/tokenProgram2022';
-import { verifyMintInJson } from './jsonVerifications';
+import { getFirstValueInArray, verifyMintInJson } from './jsonVerifications';
 
 const MERCHANT_PUBKEY = new PublicKey(PUBLIC_MERCHANT_PUBKEY);
 const MERCHANT_PRIVATE_KEY = new Uint8Array(JSON.parse(PRIVATE_MERCHANT_PRIVATE_KEY))
