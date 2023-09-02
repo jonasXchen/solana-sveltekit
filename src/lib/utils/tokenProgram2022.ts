@@ -25,11 +25,15 @@ import {
     createAssociatedTokenAccountInstruction,
     createMintToCheckedInstruction,
     createTransferCheckedWithFeeInstruction,
+    createApproveInstruction,
     getAssociatedTokenAddressSync,
     getAccount,
     getMint,
     getTransferFeeConfig,
-    createTransferCheckedInstruction
+    createTransferCheckedInstruction,
+    createFreezeAccountInstruction,
+    createSetAuthorityInstruction,
+    AuthorityType
 } from "@solana/spl-token"
 
        
@@ -400,4 +404,64 @@ export let createSplTransferTx = async (connection: Connection, mint: PublicKey 
 
     return tx
 
+}
+
+
+export let approveDelegateTx = (mint: PublicKey, delegate: PublicKey, owner: PublicKey, amount: number, multiSigners: PublicKey[] = [], programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
+
+    let tx = new Transaction()
+   
+    let approveDelegateIx = createApproveInstruction(
+        mint,
+        delegate,
+        owner,
+        amount,
+        multiSigners,
+        programId
+    )
+
+    tx.add(approveDelegateIx)
+
+    return tx
+}
+
+export let createSetAuthorityTx = (account: PublicKey, currentAuthority: PublicKey, authorityType: AuthorityType, newAuthority: PublicKey, multiSigners: PublicKey[] = [], programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
+
+    let tx = new Transaction()
+   
+    let setAuthorityIx = createSetAuthorityInstruction(
+        account,
+        currentAuthority,
+        authorityType,
+        newAuthority,
+        multiSigners,
+        programId
+    )
+
+    tx.add(setAuthorityIx)
+
+    return tx
+}
+
+
+export let createFreezeAccountTx = (mint: PublicKey, recipient: PublicKey, freezeAuthority: PublicKey, multiSigners: PublicKey[] = [], programId: PublicKey = TOKEN_2022_PROGRAM_ID) => {
+
+    // Create New Transaction
+    let tx = new Transaction()
+
+    // Get ATA account to be freezed
+    let account = getAta(mint, recipient, programId)
+
+    let freezeAccountIx = createFreezeAccountInstruction(
+        account,
+        mint,
+        freezeAuthority,
+        multiSigners,
+        programId
+    )
+
+    tx.add(freezeAccountIx)
+
+    return tx
+    
 }

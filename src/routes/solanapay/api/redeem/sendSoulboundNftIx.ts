@@ -1,48 +1,16 @@
-import { PublicKey, Cluster, Connection, clusterApiUrl, Signer, Transaction } from "@solana/web3.js"
-import { 
-    Metaplex, 
-    freezeDelegatedNftBuilder,
-    approveTokenDelegateAuthorityBuilder,
-    transferNftBuilder,
-    transferNftOperation
-} from "@metaplex-foundation/js"
-import { createFreezeDelegatedAccountInstruction, createTransferInstruction } from "@metaplex-foundation/mpl-token-metadata"
+import type { PublicKey} from "@solana/web3.js"
+import { createSetAuthorityTx, getAta } from "$lib/utils/tokenProgram2022"
+import { AuthorityType, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 
 
-export let sendSoulboundNftIx = (connection: Connection, mintAddress: PublicKey, delegateAuthority: PublicKey, sender: PublicKey, recipient: PublicKey, signer: Signer) => {
-    // Connect to cluster, rpc node, and set up metaplex client
-    const metaplex = Metaplex.make(connection)
+export let sendSoulboundNftIx = async (mint: PublicKey, sender: PublicKey, recipient: PublicKey, multiSigners: PublicKey[] = []) => {
 
-    let approveFreezeAuthorityIx = approveTokenDelegateAuthorityBuilder(
-        metaplex,
-        {
-            mintAddress,
-            delegateAuthority
-        }
-    ).getInstructions()
+    let ata = getAta(mint, sender, TOKEN_PROGRAM_ID)
+    let createSetOwnershipIx = createSetAuthorityTx(ata, sender, AuthorityType.AccountOwner, recipient, multiSigners, TOKEN_PROGRAM_ID).instructions
 
-
-    let sendNftIx = transferNftBuilder(metaplex,
-        {
-            nftOrSft: {
-                address: mintAddress,
-                tokenStandard: 0
-            },
-            authority: signer,
-            fromOwner: sender,
-            toOwner: recipient
-        }
-    ).getInstructions()
-
-    let freezeNftIx = freezeDelegatedNftBuilder(
-        metaplex,
-        {
-            mintAddress,
-            delegateAuthority: signer
-        }
-    ).getInstructions()
-
-    let ixArray = [ ...sendNftIx]
+    let ixArray = [ 
+        ...createSetOwnershipIx
+    ]
 
     return ixArray
 

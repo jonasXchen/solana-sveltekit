@@ -12,13 +12,13 @@
   import { cluster } from "$lib/stores";
 
   import {
-    PUBLIC_SOLANAPAY_ENDPOINT,
+    PUBLIC_ENDPOINT_HOST,
     PUBLIC_USDC_DEV_MINT,
     PUBLIC_MERCHANT_PUBKEY,
   } from "$env/static/public";
 
   // Define inputs and set default values for Solana Pay
-  let link: URL = new URL(PUBLIC_SOLANAPAY_ENDPOINT);
+  let link: URL = new URL(PUBLIC_ENDPOINT_HOST + "/solanapay/api/redeem");
   let recipient: PublicKey | string = new PublicKey(
     PUBLIC_MERCHANT_PUBKEY as String
   );

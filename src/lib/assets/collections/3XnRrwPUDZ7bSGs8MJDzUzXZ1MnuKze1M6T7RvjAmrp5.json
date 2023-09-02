@@ -1,0 +1,62 @@
+{
+  "name": "Metacamp Student Pass | NTUB",
+  "symbol": "PASS",
+  "description": "This Student Pass Collection issued by Metacamp grants members from NTU Blockchain Society physical access to Metacamp.",
+  "seller_fee_basis_points": 500,
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Community",
+      "value": "NTU Blockchain Society"
+    },
+    {
+      "trait_type": "Issuer",
+      "value": "Metacamp"
+    },
+    {
+      "trait_type": "Pass",
+      "value": "Student"
+    }
+  ],
+  "collection": {
+    "name": null
+  },
+  "properties": "{\"files\":[{\"type\":\"image/png\",\"uri\":\"https://nftstorage.link/ipfs/bafybeieqqojkvqs362vprlijrwc2oo726iprxr2pk22sfrkwzgyrjarohm\"},{\"type\":\"video/mp4\",\"uri\":\"https://nftstorage.link/ipfs/bafybeiay5k6xhmbw64kyarbvgfkhdorgkp5q5xuamogcah22vnppem6pbu\"}],\"creators\":[{\"address\":\"JonasQ6kwFknJKQpVXbAs2d3fdVLy2DnXd13ynwhgV4\",\"share\":100}],\"category\":\"video\"}",
+  "image": "https://nftstorage.link/ipfs/bafybeieqqojkvqs362vprlijrwc2oo726iprxr2pk22sfrkwzgyrjarohm",
+  "animation_url": "https://nftstorage.link/ipfs/bafybeiay5k6xhmbw64kyarbvgfkhdorgkp5q5xuamogcah22vnppem6pbu",
+  "reference_key": "3XnRrwPUDZ7bSGs8MJDzUzXZ1MnuKze1M6T7RvjAmrp5",
+  "mints": [
+    "DkMvNH7toZeHdBzPmVZE73c752nCmS9ggQ3s9hTPTuTi",
+    "5seGQHyJRTAayos93HFigZfGThxa2ZxAiq4BAZwkDQCC",
+    "7RK3nkpV5Z66QnBVMNTJ5EnVFrWJMF8RoCR7RiqpDwQo",
+    "EhgiBBrLN61vHi9jFHPxyxgafkeZWr41N6JR9yCC8CSq",
+    "Hb5oi3dAujPJNkfhA7SVh99SADpVJPBAyNQ5HFHAvq8g",
+    "2u8HTjgPsUwdPhonKhun1HQNqBwQWoZL7yrGXbkpRySH",
+    "8TLyuXAtbRcdTpyzHERzmwhDWGCSWxZt5d9HFB6R7Foy",
+    "5mhRcwahGsYRr9UF2rziXsuSvsAK76gWH9YY9r9hGBDJ",
+    "C3MGQL5YCemXUAVFqpDYx1ch4MGqu3SckGLFHE9GERmp",
+    "AevXtyQGFYGFwxqQCbRqCR4pftWDq69kjoJJ9NJbUaCW",
+    "Xgqzonuq4s9unxXwiw2E3ceJawCvxJAMoUZP5LXnxtK",
+    "Cq6rFa8NVvn52w3RW5yb7RozVnXjiwXrKZxyJWuftZPv",
+    "EtmxuoWytUPzNq4DF6ZUKT7Gzm6JZcu3QMGf4eu51eKM",
+    "FAb1LmLDASUJf85NiPRYzbPxGrp24mxLrPTmBaTQmvkx",
+    "6HsJEwmHjc1ttTVHVeW523YuTtRM6F7MWdMio7k3Fkdc",
+    "JAmJ8TWPQVcWVSoq6e4NyzeN5g3Egm3hbUQJyx3FKFnW",
+    "7NaZbyUXybhi2DuidZ3DNqW3LkN9Q1rvqVaSWUiaoKj9",
+    "Go3riEX2e6TgHYB6sLv9P4MCrx4WaKsTmiK4bErDdors",
+    "HqGQ53bRcHcLwkNNxqzK29cNAMt7iZkqWeYABccUiYdV",
+    "4pDX2Gp9w83BtUez6TTu3xn8jh4QBETH8qwD6jNJjqNd",
+    "BEbbboB2637zd9hp6QTL6MUPVjDNHnsH1NMKbTaxzPCM",
+    "6nU96WcC63Zst6ESXJPjPvzK6z2Jg8L96o3FiZjCW8hX",
+    "CFkC5xYwf5iUhmVdT52nGscy7Nj3NUHUFXTC8wk4wN6n",
+    "Ga9ogGQquZvLDTB7AFyWvi36ZuaFVPuTLtSSGPrxoRQQ",
+    "EB84JkeGPHKn5xLFp5vbYCQGYuisTvPbdT9b9ufz2CdV",
+    "EKodeS9KyENc3vYcAGopCjeTG5zSjX6Bxxg42o8yJczn",
+    "GE8aZDEcKQWjxjC7kZNf5Bna5qjN6xnKQ4J6dBwzDEog",
+    "HAgkWnkh6nxRCK7qrM9pmkSGyC9Gn3zdty42KfvwiUWN",
+    "CtXj4xdE6R4YLDpEmkfpreLmQG9WaP5ZSNo8vEPYqxV5"
+  ],
+  "signers": [
+    "JonasQ6kwFknJKQpVXbAs2d3fdVLy2DnXd13ynwhgV4"
+  ]
+}

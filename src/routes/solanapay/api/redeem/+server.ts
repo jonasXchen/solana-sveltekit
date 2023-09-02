@@ -3,13 +3,16 @@ import { Connection, Keypair, PublicKey, Transaction, clusterApiUrl, Transaction
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 import { sendSoulboundNftIx } from './sendSoulboundNftIx';
-
 import { json } from '@sveltejs/kit';
 import { PUBLIC_MERCHANT_PUBKEY } from '$env/static/public'
 import { PRIVATE_MERCHANT_PRIVATE_KEY, PRIVATE_SOL_RPC } from '$env/static/private'
+import { getFirstValueInArray } from './jsonVerifications';
+import { createSplTransferTx } from '$lib/utils/tokenProgram2022';
+import { verifyMintInJson } from './jsonVerifications';
 
 const MERCHANT_PUBKEY = new PublicKey(PUBLIC_MERCHANT_PUBKEY);
 const MERCHANT_PRIVATE_KEY = new Uint8Array(JSON.parse(PRIVATE_MERCHANT_PRIVATE_KEY))
+const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr")
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export function GET( event : any ) {
@@ -89,16 +92,21 @@ export async function POST( event : any ) {
   if (typeof accountField !== 'string') throw new Error('invalid account');
   let account = new PublicKey(accountField);
   
+  connection = new Connection(clusterApiUrl("mainnet-beta"), 'confirmed')
+  let filePath = "src/lib/assets/collections/3XnRrwPUDZ7bSGs8MJDzUzXZ1MnuKze1M6T7RvjAmrp5.json"
+  let mintKey = "mints"
+  let signerKey = "signers"
+  let mintAddress = getFirstValueInArray(filePath, mintKey, signerKey, account.toString())!
+  let mint = new PublicKey(mintAddress)
+
   // Create Transfer Instruction based on provided token, if not then SOL Transfer
-  let transferIxArray: TransactionInstruction[] = sendSoulboundNftIx(
-    connection,
-    new PublicKey("4pDX2Gp9w83BtUez6TTu3xn8jh4QBETH8qwD6jNJjqNd"),
+  // let transferIxArray: TransactionInstruction[] = (await createSplTransferTx(connection, mint, account, amount, recipient, MERCHANT_PUBKEY, [reference], undefined, programId)).instructions
+  let transferIxArray: TransactionInstruction[] = await sendSoulboundNftIx(
+    new PublicKey(mintAddress),
     MERCHANT_PUBKEY,
-    MERCHANT_PUBKEY,
-    recipient,
-    signer
+    account,
+    [ account ]
   )
-  console.log(transferIxArray.keys.toString())
 
   // Get latest blockchash and block height
   let latestBlockHash = await connection.getLatestBlockhash();
@@ -112,8 +120,22 @@ export async function POST( event : any ) {
     }
   )
   tx.add(...transferIxArray)
-
   
+  // create memo
+  let memoPubkey = (new Keypair()).publicKey
+  let memoString = JSON.stringify({
+    identifier: memoPubkey,
+    signer_pubkey: account
+  })
+  let createMemoIx = new TransactionInstruction(
+    {
+      keys: [],
+      data: Buffer.from(memoString, 'utf8'),
+      programId: MEMO_PROGRAM_ID
+    }
+  )
+  tx.add(createMemoIx)
+
   // Partially sign to take on fees
   tx.partialSign( signer );
 
@@ -125,6 +147,8 @@ export async function POST( event : any ) {
   });
   const base64Transaction = serializedTransaction.toString('base64');
 
+  subscribeAndVerifyOnchain(connection, account, memoString, undefined, () => verifyMintInJson(filePath, mintKey, signerKey, account.toString()))
+
   return json(
     { 
       transaction: base64Transaction,
@@ -134,3 +158,36 @@ export async function POST( event : any ) {
 }
 
 
+let subscribeAndVerifyOnchain = (connection: Connection, account: PublicKey, memoString: string, timer: number = 1000 * 60 * 2, callback: (...args: any) => any) => {
+
+  // Execution Time Start
+  const startTime = new Date().getTime();
+
+  // Status of verification 
+  let status : boolean = false
+
+  let logId = connection.onLogs(account, (logs) => {
+
+    console.log(logs)
+    status = logs.logs.some(item => item.replace(/\\/g, '').includes(memoString));
+
+    if (status) {
+      connection.removeOnLogsListener(logId)
+      const executionTime = new Date().getTime() - startTime
+      console.log(`Verified listening in ${executionTime}ms, closing listening on ${account.toString()}: `, logId)
+      callback()
+    }
+  });
+  // Indicate listening of account logs
+  console.log(`Listening logs on ${account.toString()}: `, logId)
+
+  // If status still false, remove Listener after timer
+  setTimeout(() => {
+    if (!status) {
+      connection.removeOnLogsListener(logId)
+      console.log(`${timer}ms timeout over: Closing listening logs on ${account.toString()}: ${logId}`)
+    }
+  }, timer)
+ 
+
+}
