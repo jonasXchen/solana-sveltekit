@@ -40,7 +40,9 @@ export let verifyMintInJson = (filePath: string, mintKey: string, signerKey: str
     if (json.hasOwnProperty(mintKey)) {
         // Get the array
         let mintArray = json[mintKey];
+        
         let signerArray = json[signerKey]
+        
 
         // Check if the array exists and has elements
         if (Array.isArray(mintArray) && mintArray.length > 0 && Array.isArray(signerArray) && !(signerArray.includes(signerString)) ) {
@@ -50,8 +52,10 @@ export let verifyMintInJson = (filePath: string, mintKey: string, signerKey: str
 
             // Remove the first element from the array
             mintArray.shift();
+            console.log(mintArray)
             // Append the new item to the array
             signerArray.push(signerString);
+            console.log(signerArray)
 
   
             // Convert the modified object back to a JSON string
@@ -59,7 +63,8 @@ export let verifyMintInJson = (filePath: string, mintKey: string, signerKey: str
             json[signerKey] = signerArray
   
             // Save the updated JSON string to the filesystem
-            fs.writeFileSync(filePath, JSON.stringify(json, null, 2))
+            let newFile = fs.writeFileSync(filePath, JSON.stringify(json, null, 2))
+            console.log(newFile)
 
         } else {
         console.error(`The specified array is empty or '${signerString}' alreade redeemed.`);

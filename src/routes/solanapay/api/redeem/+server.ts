@@ -35,27 +35,6 @@ export async function POST( event : any ) {
   let urlParams = event.url.searchParams
 
   // Get and make checks on parameters
-  let clusterParam = urlParams.get('cluster') || undefined;
-  let connection : Connection
-  if (clusterParam === 'mainnet-beta') {
-    connection = new Connection(PRIVATE_SOL_RPC, 'confirmed')
-  } else if (clusterParam === ('devnet'|| 'testnet')) {
-    connection = new Connection(clusterApiUrl(clusterParam), 'confirmed')
-  } else throw new Error('invalid cluster');
-  
-  let splTokenParam = urlParams.get('splToken');
-  let splToken : PublicKey | undefined
-  if (splTokenParam === '') { 
-    splToken = undefined 
-  } else {
-    splToken = new PublicKey(splTokenParam) || undefined ;
-  }
-  
-  let programParam = urlParams.get('programId');
-  if (programParam && typeof programParam !== 'string') throw new Error('invalid program');
-  let programId = new PublicKey(programParam) || TOKEN_PROGRAM_ID;
-
-
   let labelParam = urlParams.get('label');
   if (labelParam && typeof labelParam !== 'string') throw new Error('invalid label');
   let label = labelParam || undefined;
@@ -74,38 +53,35 @@ export async function POST( event : any ) {
   if (typeof recipientParam !== 'string') throw new Error('invalid recipient');
   let recipient = new PublicKey(recipientParam);
 
-  let referenceParam = urlParams.get('reference');
-  if (typeof referenceParam !== 'string') throw new Error('invalid reference');
-  let reference = new PublicKey(referenceParam);
-
-  let memoParam = urlParams.get('memo');
-  if (memoParam && typeof memoParam !== 'string') throw new Error('invalid memo');
-  let memo = memoParam || undefined;
-
-
-  let signer = Keypair.fromSecretKey( MERCHANT_PRIVATE_KEY )
-
   // Account provided in the transaction request body by the wallet.
   let accountField = body.account;
   if (!accountField) throw new Error('missing account');
   if (typeof accountField !== 'string') throw new Error('invalid account');
   let account = new PublicKey(accountField);
-  
-  connection = new Connection(clusterApiUrl("mainnet-beta"), 'confirmed')
+
+
+  let connection = new Connection("https://rpc.helius.xyz/?api-key=72d348d8-4037-4fe1-a4d3-fe9e271be940", 'processed')
   let filePath = "static/collections/3XnRrwPUDZ7bSGs8MJDzUzXZ1MnuKze1M6T7RvjAmrp5.json"
   let mintKey = "mints"
   let signerKey = "signers"
-  let mintAddress = getFirstValueInArray(filePath, mintKey, signerKey, account.toString())!
+  // let mintAddress = getFirstValueInArray(filePath, mintKey, signerKey, account.toString())
+  let mintAddress = "4UbLfhxZTQASUa1xP6u24BY4RVJLCPHAt7Px4ydw8Nvs"
+
   let mint = new PublicKey(mintAddress)
 
+  let signer = Keypair.fromSecretKey( MERCHANT_PRIVATE_KEY )
+
+  console.log(`Signer: ${signer.publicKey.toString()}, Account: ${account}, Mint: ${mint}, Recipient: ${recipient}, amount: ${amount}, Merchant: ${MERCHANT_PUBKEY}` )
+
+
   // Create Transfer Instruction based on provided token, if not then SOL Transfer
-  // let transferIxArray: TransactionInstruction[] = (await createSplTransferTx(connection, mint, account, amount, recipient, MERCHANT_PUBKEY, [reference], undefined, programId)).instructions
-  let transferIxArray: TransactionInstruction[] = await sendSoulboundNftIx(
-    new PublicKey(mintAddress),
-    MERCHANT_PUBKEY,
-    account,
-    [ account ]
-  )
+  let transferIxArray: TransactionInstruction[] = (await createSplTransferTx(connection, mint, account, amount, recipient, MERCHANT_PUBKEY, undefined, undefined, TOKEN_PROGRAM_ID)).instructions
+  // let transferIxArray: TransactionInstruction[] = await sendSoulboundNftIx(
+  //   mint,
+  //   MERCHANT_PUBKEY,
+  //   account,
+  //   [ account ]
+  // )
 
   // Get latest blockchash and block height
   let latestBlockHash = await connection.getLatestBlockhash();
@@ -120,20 +96,20 @@ export async function POST( event : any ) {
   )
   tx.add(...transferIxArray)
   
-  // create memo
-  let memoPubkey = (new Keypair()).publicKey
-  let memoString = JSON.stringify({
-    identifier: memoPubkey,
-    signer_pubkey: account
-  })
-  let createMemoIx = new TransactionInstruction(
-    {
-      keys: [],
-      data: Buffer.from(memoString, 'utf8'),
-      programId: MEMO_PROGRAM_ID
-    }
-  )
-  tx.add(createMemoIx)
+  // // create memo
+  // let memoPubkey = (new Keypair()).publicKey
+  // let memoString = JSON.stringify({
+  //   identifier: memoPubkey,
+  //   signer_pubkey: account
+  // })
+  // let createMemoIx = new TransactionInstruction(
+  //   {
+  //     keys: [],
+  //     data: Buffer.from(memoString, 'utf8'),
+  //     programId: MEMO_PROGRAM_ID
+  //   }
+  // )
+  // tx.add(createMemoIx)
 
   // Partially sign to take on fees
   tx.partialSign( signer );
@@ -146,7 +122,12 @@ export async function POST( event : any ) {
   });
   const base64Transaction = serializedTransaction.toString('base64');
 
-  subscribeAndVerifyOnchain(connection, account, memoString, undefined, () => verifyMintInJson(filePath, mintKey, signerKey, account.toString()))
+  // subscribeAndVerifyOnchain(
+  //   connection, 
+  //   account, 
+  //   memoString, 
+  //   undefined, 
+  //   () => console.log('done'))
 
   return json(
     { 

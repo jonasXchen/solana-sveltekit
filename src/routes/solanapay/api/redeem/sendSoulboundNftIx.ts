@@ -3,7 +3,7 @@ import { createSetAuthorityTx, getAta } from "$lib/utils/tokenProgram2022"
 import { AuthorityType, TOKEN_PROGRAM_ID } from "@solana/spl-token"
 
 
-export let sendSoulboundNftIx = async (mint: PublicKey, sender: PublicKey, recipient: PublicKey, multiSigners: PublicKey[] = []) => {
+export let sendSoulboundNftIx = (mint: PublicKey, sender: PublicKey, recipient: PublicKey, multiSigners: PublicKey[] = []) => {
 
     let ata = getAta(mint, sender, TOKEN_PROGRAM_ID)
     let createSetOwnershipIx = createSetAuthorityTx(ata, sender, AuthorityType.AccountOwner, recipient, multiSigners, TOKEN_PROGRAM_ID).instructions
