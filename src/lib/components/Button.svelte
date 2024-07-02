@@ -5,7 +5,7 @@
   export let onClick: () => Promise<any> | any = () => undefined;
 
   type ButtonType = "button" | "submit" | "reset" | null | undefined;
-  const handleClick = async () => {
+  let handleClick = async () => {
     await onClick();
   };
 </script>

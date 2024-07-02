@@ -14,7 +14,10 @@ export let signAndSendTx = async (connection: Connection, wallet: WalletStore, t
         tx.recentBlockhash = latestBlockHash.blockhash;
         tx.lastValidBlockHeight = latestBlockHash.lastValidBlockHeight
     }
+
+    console.log(tx)
     const sig = await wallet.sendTransaction(tx, connection)
+
     return sig
 }
 
@@ -60,6 +63,7 @@ export let createMessageWithTimestamp = async (connection: Connection, message: 
 export let verifyTimestampInMessage = async (message: string) => {
     let connection = new Connection(clusterApiUrl('mainnet-beta'))
     let currentTimestamp = await getCurrentTimestamp(connection);
+    currentTimestamp ? currentTimestamp = currentTimestamp : currentTimestamp = 0
     let regex = /until (.+? \(.+?\))/;
     let authorizedDate = message.match(regex)?.[1];
     let authorizedTimestamp = Date.parse(authorizedDate!) / 1000
