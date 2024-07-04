@@ -129,7 +129,7 @@
   <div class="grid grid-cols-1 space-y-4">
     <!-- User Input -->
     <Select
-      label="Pool Account"
+      label="Select LST"
       options={poolAcccountSymbols}
       bind:bindValue={poolAccountSymbolSelected}
       {onChange}
@@ -144,7 +144,7 @@
     </div>
     <div>
       <Button
-        label="Get Pool Amount"
+        label="Get Amount"
         onClick={() =>
           getAmount(
             $walletStore,
@@ -153,7 +153,7 @@
           )}
       />
       <Button
-        label="Unstake"
+        label="Withdraw"
         styling="bg-blue-600"
         onClick={() =>
           unstakeFromPool(

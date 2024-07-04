@@ -617,12 +617,12 @@ let poolProgram = findPoolProgramId(stakePoolAddress)!
       }),
     );
 
-    instructions.push(
-      deactivateStakeAccountInstruction(
-        stakeToReceive,
-        tokenOwner,
-      )
-    )
+    // instructions.push(
+    //   deactivateStakeAccountInstruction(
+    //     stakeToReceive,
+    //     tokenOwner,
+    //   )
+    // )
     console.log("withdrawed stake destination", stakeToReceive.toString())
 
     i++;
