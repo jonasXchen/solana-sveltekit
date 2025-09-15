@@ -18,7 +18,7 @@
       clusterUrl = "http://127.0.0.1:8899";
     } else if (clusterSelected == "mainnet-beta") {
       clusterUrl =
-        "https://rpc.helius.xyz/?api-key=72d348d8-4037-4fe1-a4d3-fe9e271be940";
+        "https://mainnet.helius-rpc.com/?api-key=d361db0b-e072-43fd-908f-5f81baf9226a";
     } else {
       clusterUrl = clusterApiUrl(clusterSelected as Cluster);
     }
