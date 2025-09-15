@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-node": "^1.2.4",
-		"@sveltejs/adapter-vercel": "^3.0.3",
+		"@sveltejs/adapter-vercel": "^3.1.0",
 		"@sveltejs/kit": "^1.22.6",
 		"autoprefixer": "^10.4.14",
 		"fs": "^0.0.1-security",
@@ -35,6 +35,8 @@
 		"@solana/pay": "^0.2.5",
 		"@solana/qr-code-styling": "^1.6.0",
 		"@solana/spl-token": "^0.3.7",
+		"@solana/spl-token-group": "^0.0.7",
+		"@solana/spl-token-metadata": "^0.1.6",
 		"@solana/wallet-adapter-base": "^0.9.22",
 		"@solana/wallet-adapter-wallets": "^0.19.18",
 		"@solana/web3.js": "^1.74.0",
